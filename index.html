@@ -1,1237 +1,1511 @@
-
-
 <!DOCTYPE html>
 <html lang="az">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-<title>MathClass</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<title>AzDili — Sinif Paneli</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0d1117; --bg2:#161b22; --bg3:#1c2333; --border:#30363d; --border2:#21262d;
-  --text:#e6edf3; --text2:#8b949e; --text3:#484f58;
-  --green:#22c55e; --green-s:rgba(34,197,94,.13);
-  --orange:#f59e0b; --orange-s:rgba(245,158,11,.13);
-  --red:#ef4444; --red-s:rgba(239,68,68,.13);
-  --purple:#a855f7; --purple-s:rgba(168,85,247,.13);
-  --radius:14px; --radius-s:8px;
-  /* role colors injected by JS */
-  --acc:#3b82f6; --acc2:#60a5fa; --acc-s:rgba(59,130,246,.13);
+  --bg:#09090b;--bg2:#111113;--bg3:#18181b;--bg4:#1f1f23;
+  --border:#27272a;--border2:#3f3f46;
+  --text:#fafafa;--text2:#a1a1aa;--text3:#52525b;
+  --green:#4ade80;--green-s:rgba(74,222,128,.12);
+  --amber:#fbbf24;--amber-s:rgba(251,191,36,.12);
+  --rose:#fb7185;--rose-s:rgba(251,113,133,.12);
+  --sky:#38bdf8;--sky-s:rgba(56,189,248,.12);
+  --violet:#a78bfa;--violet-s:rgba(167,139,250,.12);
+  --radius:16px;--radius-s:10px;
+  --acc:#e8243b;--acc2:#ff5567;--acc-s:rgba(232,36,59,.13);--acc-dark:#991b1b;
 }
+/* student overrides applied via JS */
+body.student-mode{
+  --acc:#3b82f6;--acc2:#60a5fa;--acc-s:rgba(59,130,246,.13);--acc-dark:#1e40af;
+}
+
 html{scroll-behavior:smooth}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
-/* ── UTILITIES ── */
+/* ═══ UTILITIES ═══ */
 .hide{display:none!important}
-.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
-.badge.g{background:var(--green-s);color:var(--green)}
-.badge.o{background:var(--orange-s);color:var(--orange)}
-.badge.r{background:var(--red-s);color:var(--red)}
-.badge.b{background:var(--acc-s);color:var(--acc2)}
-.badge.p{background:var(--purple-s);color:var(--purple)}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.02em}
+.chip.g{background:var(--green-s);color:var(--green)}
+.chip.o{background:var(--amber-s);color:var(--amber)}
+.chip.r{background:var(--rose-s);color:var(--rose)}
+.chip.b{background:var(--sky-s);color:var(--sky)}
+.chip.v{background:var(--violet-s);color:var(--violet)}
+.chip.acc{background:var(--acc-s);color:var(--acc2)}
 
-/* ── LOGIN ── */
+/* ═══ LOGIN ═══ */
 #loginScreen{
-  min-height:100vh;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;padding:24px 16px;
-  background:radial-gradient(ellipse 70% 50% at 20% 10%,rgba(59,130,246,.14) 0%,transparent 60%),
-             radial-gradient(ellipse 50% 60% at 80% 90%,rgba(168,85,247,.10) 0%,transparent 55%),var(--bg);
+  min-height:100vh;display:flex;align-items:stretch;
 }
-.l-logo{display:flex;align-items:center;gap:12px;margin-bottom:36px;animation:fadeUp .6s ease both}
-.l-logo-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 32px rgba(59,130,246,.35);background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
-.l-logo-text{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em}
-.l-logo-text span{color:var(--acc2)}
-.l-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:36px 28px;width:100%;max-width:400px;box-shadow:0 4px 32px rgba(0,0,0,.5);animation:fadeUp .7s .1s ease both}
-.l-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px}
+.login-left{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 32px;position:relative;overflow:hidden;
+  background:var(--bg2);
+}
+.login-right{
+  width:400px;flex-shrink:0;display:flex;flex-direction:column;
+  justify-content:center;padding:48px 40px;
+  background:var(--bg);border-left:1px solid var(--border);
+}
+/* mobile: stack */
+@media(max-width:700px){
+  #loginScreen{flex-direction:column}
+  .login-left{min-height:220px;padding:32px 20px}
+  .login-right{width:100%;padding:32px 20px;border-left:none;border-top:1px solid var(--border)}
+}
+
+/* Decorative Az background */
+.login-art{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;overflow:hidden;
+}
+.login-art-bg{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(120px,22vw,260px);
+  font-weight:800;color:rgba(232,36,59,.06);
+  letter-spacing:-.05em;user-select:none;line-height:1;
+  text-align:center;
+}
+.login-art-overlay{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 70% at 50% 50%,transparent 30%,var(--bg2) 90%);
+}
+.login-brand{position:relative;z-index:1;text-align:center}
+.login-icon{
+  width:64px;height:64px;border-radius:18px;margin:0 auto 18px;
+  background:linear-gradient(135deg,var(--acc),var(--acc-dark));
+  display:flex;align-items:center;justify-content:center;font-size:30px;
+  box-shadow:0 0 40px rgba(232,36,59,.4);
+}
+.login-brand-name{
+  font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,42px);
+  font-weight:800;color:var(--text);letter-spacing:-.02em;
+}
+.login-brand-name span{color:var(--acc2)}
+.login-brand-tag{
+  font-size:13px;color:var(--text2);margin-top:8px;font-weight:400;
+  font-style:italic;letter-spacing:.01em;
+}
+.login-brand-pills{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.login-pill{
+  font-size:11px;font-weight:500;padding:5px 12px;border-radius:20px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:var(--text2);
+}
+
+/* Login form */
+.l-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin-bottom:4px}
 .l-sub{font-size:13px;color:var(--text2);margin-bottom:28px}
-.role-sw{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px}
-.role-btn{padding:12px 8px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;text-align:center}
+.role-sw{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px}
+.role-btn{
+  padding:11px 8px;border-radius:10px;border:1.5px solid var(--border);
+  background:transparent;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;text-align:center;
+}
 .role-btn.active{border-color:var(--acc);background:var(--acc-s);color:var(--acc2)}
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.field label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2)}
-.field input,.field select,.field textarea{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-s)}
-.field input::placeholder,.field textarea::placeholder{color:var(--text3)}
-.field textarea{resize:vertical;min-height:72px}
-.btn-p{width:100%;padding:14px;background:linear-gradient(135deg,var(--acc),var(--acc-dark,#1d4ed8));border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px var(--acc-s);margin-top:4px}
-.btn-p:hover{transform:translateY(-1px);filter:brightness(1.1)}
-.btn-p:active{transform:none}
-.demo-hint{margin-top:18px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:14px;font-size:12px;color:var(--text2);line-height:1.7}
-.demo-hint strong{color:var(--text);display:block;margin-bottom:3px}
+.field label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.fi{
+  background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:11px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;
+  color:var(--text);outline:none;width:100%;transition:border-color .2s,box-shadow .2s;
+}
+.fi:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-s)}
+.fi::placeholder{color:var(--text3)}
+textarea.fi{resize:vertical;min-height:70px}
+.btn-acc{
+  width:100%;padding:13px;background:linear-gradient(135deg,var(--acc),var(--acc-dark));
+  border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px;font-weight:700;color:#fff;cursor:pointer;transition:all .2s;
+  box-shadow:0 4px 24px rgba(232,36,59,.35);margin-top:6px;
+}
+.btn-acc:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-acc:active{transform:none}
+.demo-hint{
+  margin-top:16px;padding:13px 14px;background:var(--bg3);
+  border:1px solid var(--border);border-radius:10px;
+  font-size:11.5px;color:var(--text2);line-height:1.7;
+}
+.demo-hint b{color:var(--text);display:block;margin-bottom:2px}
+.demo-hint code{
+  background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px;
+  font-size:11px;color:var(--acc2);
+}
 
-/* ── APP ── */
+/* ═══ APP SHELL ═══ */
 #app{display:none;min-height:100vh;flex-direction:column}
 
-/* TOPBAR */
-.topbar{position:sticky;top:0;z-index:100;background:rgba(13,17,23,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border2);padding:0 16px;height:58px;display:flex;align-items:center;justify-content:space-between}
+/* Topbar */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(9,9,11,.93);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  height:56px;padding:0 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;
+}
 .tb-left{display:flex;align-items:center;gap:10px}
-.tb-logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
+.tb-logo{
+  font-family:'Playfair Display',serif;font-size:19px;font-weight:700;
+  white-space:nowrap;
+}
 .tb-logo span{color:var(--acc2)}
-.tb-badge{background:var(--acc-s);color:var(--acc2);font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid rgba(99,179,237,.2)}
+.tb-rolebadge{
+  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 9px;border-radius:20px;background:var(--acc-s);color:var(--acc2);
+  border:1px solid rgba(255,85,103,.2);
+}
 .tb-right{display:flex;align-items:center;gap:8px}
-.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--purple));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
-.logout-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 11px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text2);cursor:pointer;transition:all .2s}
-.logout-btn:hover{border-color:var(--red);color:var(--red)}
+.av{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--acc),var(--violet));
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;
+}
+.tb-name{font-size:12px;font-weight:600;color:var(--text2);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.out-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;color:var(--text2);cursor:pointer;transition:all .2s;white-space:nowrap}
+.out-btn:hover{border-color:var(--rose);color:var(--rose)}
 
-/* NAV */
-.nav-tabs{display:flex;overflow-x:auto;gap:2px;padding:8px 12px;background:var(--bg2);border-bottom:1px solid var(--border2);scrollbar-width:none}
-.nav-tabs::-webkit-scrollbar{display:none}
-.nav-tab{flex-shrink:0;padding:8px 14px;border-radius:8px;border:none;background:transparent;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:5px}
+/* Nav */
+.nav{display:flex;overflow-x:auto;gap:2px;padding:6px 12px;background:var(--bg2);border-bottom:1px solid var(--border);scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav-tab{
+  flex-shrink:0;padding:7px 13px;border-radius:8px;border:none;
+  background:transparent;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .2s;
+}
 .nav-tab.active{background:var(--acc-s);color:var(--acc2)}
 .nav-tab:hover:not(.active){background:var(--bg3);color:var(--text)}
 
-/* MAIN */
-.main{flex:1;padding:16px;max-width:620px;margin:0 auto;width:100%}
-.panel{display:none;animation:fadeUp .35s ease both}
+/* Main */
+.main{flex:1;padding:16px;max-width:640px;margin:0 auto;width:100%;padding-bottom:40px}
+.panel{display:none;animation:fadeUp .3s ease both}
 .panel.active{display:block}
 
-/* ── MYSTAT-STYLE CARDS ── */
-.ms-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.ms-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:16px;position:relative;overflow:hidden}
-.ms-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,var(--acc),var(--acc2))}
-.ms-card.green::before{background:linear-gradient(to right,#16a34a,var(--green))}
-.ms-card.orange::before{background:linear-gradient(to right,#d97706,var(--orange))}
-.ms-card.purple::before{background:linear-gradient(to right,#7e22ce,var(--purple))}
-.ms-card.red::before{background:linear-gradient(to right,#991b1b,var(--red))}
-.ms-label{font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
-.ms-val{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;line-height:1}
-.ms-sub{font-size:11px;color:var(--text2);margin-top:5px}
-.ms-card.blue .ms-val{color:var(--acc2)}
-.ms-card.green .ms-val{color:var(--green)}
-.ms-card.orange .ms-val{color:var(--orange)}
-.ms-card.purple .ms-val{color:var(--purple)}
-.ms-card.red .ms-val{color:var(--red)}
+/* ═══ STAT CARDS (MySTAT style) ═══ */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.stat-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 16px;
+  position:relative;overflow:hidden;
+}
+.stat-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(to right,var(--card-c,var(--acc)),transparent);
+}
+.stat-card.g{--card-c:var(--green)}
+.stat-card.o{--card-c:var(--amber)}
+.stat-card.r{--card-c:var(--rose)}
+.stat-card.v{--card-c:var(--violet)}
+.stat-card.s{--card-c:var(--sky)}
+.stat-icon{font-size:20px;margin-bottom:10px}
+.stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px}
+.stat-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;line-height:1;color:var(--text)}
+.stat-sub{font-size:11px;color:var(--text2);margin-top:5px}
 
-/* ── SECTION ── */
-.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:20px}
-.sec-title{font-size:14px;font-weight:700}
-.sec-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text2);cursor:pointer;transition:all .2s}
-.sec-btn:hover{border-color:var(--acc);color:var(--acc2)}
+/* ═══ SECTION ═══ */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;margin-top:22px}
+.sh:first-child{margin-top:0}
+.sh-title{font-size:14px;font-weight:700;color:var(--text)}
+.sh-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text2);cursor:pointer;transition:all .2s;white-space:nowrap}
+.sh-btn:hover{border-color:var(--acc);color:var(--acc2)}
 
-/* ── TASK / NOTICE CARDS ── */
-.item-list{display:flex;flex-direction:column;gap:8px}
-.item-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:15px;cursor:pointer;transition:all .2s}
-.item-card:hover{border-color:var(--border);background:var(--bg3)}
-.item-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
-.item-title{font-size:13px;font-weight:600;line-height:1.35}
-.item-sub{font-size:11px;color:var(--text2);margin-top:3px}
-.item-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px}
-.meta-c{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:3px}
+/* ═══ CARDS ═══ */
+.card-list{display:flex;flex-direction:column;gap:8px}
+.crd{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;cursor:pointer;transition:all .2s;
+}
+.crd:hover{border-color:var(--border2);background:var(--bg3)}
+.crd-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px}
+.crd-title{font-size:13px;font-weight:700;line-height:1.35}
+.crd-sub{font-size:11px;color:var(--text2);margin-top:3px;line-height:1.5}
+.crd-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.meta{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:3px}
 
-/* ── PROGRESS ── */
-.prog-wrap{margin-top:10px}
-.prog-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:4px}
-.prog-bar{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
-.prog-fill{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.22,.68,0,1.2)}
-.prog-fill.b{background:linear-gradient(to right,var(--acc),var(--acc2))}
-.prog-fill.g{background:linear-gradient(to right,#16a34a,var(--green))}
-.prog-fill.o{background:linear-gradient(to right,#d97706,var(--orange))}
-.prog-fill.r{background:linear-gradient(to right,#991b1b,var(--red))}
+/* ═══ NOTICE ═══ */
+.notice{
+  background:var(--bg2);border:1px solid var(--border);
+  border-left:3px solid var(--acc);border-radius:var(--radius);
+  padding:15px;margin-bottom:8px;
+}
+.notice.winner{border-left-color:var(--amber)}
+.notice.pay{border-left-color:var(--green)}
+.notice-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px}
+.notice-title{font-size:13px;font-weight:700;line-height:1.3}
+.notice-date{font-size:10px;color:var(--text2);white-space:nowrap;margin-top:2px}
+.notice-body{font-size:12px;color:var(--text2);line-height:1.65}
 
-/* ── NOTICE CARD ── */
-.notice-c{background:var(--bg2);border:1px solid var(--border2);border-left:3px solid var(--acc);border-radius:var(--radius);padding:14px;margin-bottom:8px}
-.notice-c.month-winner{border-left-color:var(--orange)}
-.n-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
-.n-title{font-size:13px;font-weight:600}
-.n-date{font-size:11px;color:var(--text2)}
-.n-body{font-size:12px;color:var(--text2);line-height:1.6}
+/* ═══ PROGRESS BAR ═══ */
+.pb-wrap{margin-top:10px}
+.pb-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:4px}
+.pb{height:5px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.pb-fill{height:100%;border-radius:3px;transition:width 1.1s cubic-bezier(.22,.68,0,1.2)}
+.pb-fill.g{background:linear-gradient(to right,#16a34a,var(--green))}
+.pb-fill.o{background:linear-gradient(to right,#b45309,var(--amber))}
+.pb-fill.r{background:linear-gradient(to right,#be123c,var(--rose))}
+.pb-fill.b{background:linear-gradient(to right,#0284c7,var(--sky))}
+.pb-fill.acc{background:linear-gradient(to right,var(--acc-dark),var(--acc))}
 
-/* ── LEADERBOARD ── */
-.lb-item{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:13px 14px;margin-bottom:7px;transition:all .2s}
-.lb-item:hover{border-color:var(--border)}
+/* ═══ LB ═══ */
+.lb-item{
+  display:flex;align-items:center;gap:12px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:13px 14px;margin-bottom:7px;transition:all .2s;
+}
+.lb-item:hover{border-color:var(--border2)}
 .lb-item.me{border-color:var(--acc)!important;background:var(--acc-s)!important}
-.lb-rank{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;flex-shrink:0}
+.lb-rank{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
 .lb-rank.r1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000}
 .lb-rank.r2{background:linear-gradient(135deg,#94a3b8,#64748b);color:#fff}
-.lb-rank.r3{background:linear-gradient(135deg,#d97706,#92400e);color:#fff}
-.lb-rank.rn{background:var(--bg3);color:var(--text2);font-size:11px}
+.lb-rank.r3{background:linear-gradient(135deg,#b45309,#78350f);color:#fff}
+.lb-rank.rn{background:var(--bg4);color:var(--text2);font-size:11px}
 .lb-info{flex:1;min-width:0}
-.lb-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lb-detail{font-size:11px;color:var(--text2);margin-top:2px}
-.lb-score{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--acc2);flex-shrink:0}
+.lb-score{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--acc2);flex-shrink:0}
 
-/* ── ATTENDANCE TABLE ── */
-.att-table{width:100%;border-collapse:collapse;font-size:12px}
-.att-table th{padding:9px 10px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);border-bottom:1px solid var(--border2)}
-.att-table td{padding:10px 10px;border-bottom:1px solid var(--border2);vertical-align:middle}
-.att-table tr:last-child td{border-bottom:none}
-.att-table tr:hover td{background:rgba(255,255,255,.015)}
-.att-wrap{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
-.att-btn{width:28px;height:28px;border-radius:6px;border:none;cursor:pointer;font-size:13px;transition:all .2s;display:inline-flex;align-items:center;justify-content:center}
+/* ═══ TABLE ═══ */
+.tbl-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:10px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border)}
+td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.015)}
+
+/* ═══ STU CARD ═══ */
+.stu-row{
+  display:flex;align-items:center;gap:12px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:13px 14px;margin-bottom:8px;cursor:pointer;transition:all .2s;
+}
+.stu-row:hover{border-color:var(--border2);background:var(--bg3)}
+.stu-av{
+  width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--acc),var(--violet));
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;
+}
+.stu-info{flex:1;min-width:0}
+.stu-name{font-size:13px;font-weight:700}
+.stu-meta{font-size:11px;color:var(--text2);margin-top:2px}
+.stu-score{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--acc2);flex-shrink:0}
+
+/* ═══ ATT BUTTONS ═══ */
+.att-btn{
+  width:26px;height:26px;border-radius:6px;border:none;
+  cursor:pointer;font-size:12px;transition:all .2s;
+  display:inline-flex;align-items:center;justify-content:center;
+}
 .att-btn.present{background:var(--green-s);color:var(--green)}
-.att-btn.absent{background:var(--red-s);color:var(--red)}
-.att-btn.unset{background:var(--bg3);color:var(--text2)}
-.att-btn:hover{filter:brightness(1.2)}
+.att-btn.absent{background:var(--rose-s);color:var(--rose)}
+.att-btn.late{background:var(--amber-s);color:var(--amber)}
+.att-btn.dim{opacity:.3}
+.att-btn:hover{opacity:1!important;filter:brightness(1.2)}
 
-/* ── GRADE ROWS ── */
-.grade-row{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px 13px;margin-bottom:7px}
-.grade-row .gname{flex:1;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.grade-row .gabsent{font-size:11px;color:var(--red);flex-shrink:0}
-.grade-row input[type=number]{width:58px;padding:6px 8px;text-align:center;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;font-family:'Plus Jakarta Sans',sans-serif}
+/* ═══ GRADE ROW ═══ */
+.grade-row{
+  display:flex;align-items:center;gap:10px;background:var(--bg3);
+  border:1px solid var(--border);border-radius:10px;
+  padding:10px 13px;margin-bottom:7px;
+}
+.grade-row .gn{flex:1;font-size:13px;font-weight:600;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grade-row .ga{font-size:10px;color:var(--rose);flex-shrink:0}
+.grade-row input[type=number]{
+  width:54px;padding:6px 8px;text-align:center;background:var(--bg2);
+  border:1px solid var(--border);border-radius:8px;color:var(--text);
+  font-size:13px;font-weight:700;outline:none;font-family:'Plus Jakarta Sans',sans-serif;
+}
 .grade-row input[type=number]:focus{border-color:var(--acc)}
 
-/* ── STUDENT LIST ── */
-.stu-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s}
-.stu-card:hover{border-color:var(--border);background:var(--bg3)}
-.stu-av{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--acc),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
-.stu-info{flex:1;min-width:0}
-.stu-name{font-size:13px;font-weight:600}
-.stu-meta{font-size:11px;color:var(--text2);margin-top:2px}
-.stu-score{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--acc2);flex-shrink:0}
+/* ═══ PAYMENT ═══ */
+.pay-card{
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;margin-bottom:12px;position:relative;overflow:hidden;
+}
+.pay-card::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,rgba(74,222,128,.08),transparent 70%);
+}
+.pay-card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:12px}
+.pay-card-num{
+  font-family:'Playfair Display',serif;font-size:20px;font-weight:700;
+  letter-spacing:.12em;color:var(--text);margin-bottom:4px;
+}
+.pay-card-name{font-size:13px;color:var(--text2)}
+.pay-status-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;margin-bottom:8px;
+}
+.pay-status-name{font-size:13px;font-weight:600}
+.pay-status-meta{font-size:11px;color:var(--text2);margin-top:2px}
+.pay-action{display:flex;align-items:center;gap:8px}
+.pay-paid{background:var(--green-s);color:var(--green);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+.pay-overdue{background:var(--rose-s);color:var(--rose);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+.pay-btn{
+  background:var(--acc-s);border:1px solid rgba(255,85,103,.2);
+  border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;
+  color:var(--acc2);cursor:pointer;transition:all .2s;white-space:nowrap;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+.pay-btn:hover{background:var(--acc);color:#fff}
 
-/* ── MODAL ── */
-.modal-ov{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.72);backdrop-filter:blur(5px);display:none;align-items:flex-end;justify-content:center;padding:0}
-.modal-ov.open{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px 20px 0 0;width:100%;max-width:520px;padding:24px 20px 32px;max-height:88vh;overflow-y:auto;animation:slideUp .3s cubic-bezier(.22,.68,0,1.2) both}
-.m-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.m-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
-.m-close{background:var(--bg3);border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;color:var(--text2);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.m-close:hover{background:var(--red-s);color:var(--red)}
-.m-footer{display:flex;gap:8px;margin-top:18px}
-.btn-sec{flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;transition:all .2s}
-.btn-sec:hover{background:var(--bg3);color:var(--text)}
-.btn-p-sm{padding:12px 20px;background:linear-gradient(135deg,var(--acc),var(--acc-dark,#1d4ed8));border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;transition:all .2s;white-space:nowrap}
-.btn-p-sm:hover{filter:brightness(1.1)}
+/* ═══ ABOUT ═══ */
+.about-hero{
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:28px 24px;margin-bottom:14px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.about-hero::before{
+  content:'ÇİNAR';font-family:'Playfair Display',serif;
+  font-size:80px;font-weight:800;color:rgba(232,36,59,.04);
+  position:absolute;bottom:-20px;right:-10px;letter-spacing:-.05em;
+  pointer-events:none;user-select:none;
+}
+.about-av{
+  width:72px;height:72px;border-radius:20px;margin:0 auto 14px;
+  background:linear-gradient(135deg,var(--acc),var(--acc-dark));
+  display:flex;align-items:center;justify-content:center;font-size:32px;
+  box-shadow:0 0 32px rgba(232,36,59,.3);
+}
+.about-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:3px}
+.about-role{font-size:12px;color:var(--text2);margin-bottom:16px}
+.about-pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+.about-pill{
+  font-size:11px;font-weight:500;padding:5px 12px;border-radius:20px;
+  background:var(--bg4);border:1px solid var(--border);color:var(--text2);
+}
+.about-info{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px;margin-bottom:10px;
+}
+.about-info-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.about-info-row:last-child{border-bottom:none;padding-bottom:0}
+.about-info-row:first-child{padding-top:0}
+.about-info-icon{font-size:18px;flex-shrink:0;width:32px;text-align:center}
+.about-info-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:3px}
+.about-info-val{font-size:13px;font-weight:600;color:var(--text)}
 
-/* ── SEARCH ── */
-.search-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);outline:none;width:100%;margin-bottom:12px;transition:border-color .2s}
-.search-box:focus{border-color:var(--acc)}
-.search-box::placeholder{color:var(--text3)}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:500;transition:transform .4s cubic-bezier(.22,.68,0,1.2),opacity .3s;opacity:0;white-space:nowrap}
-.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-.toast.green{border-color:var(--green);color:var(--green)}
-.toast.red{border-color:var(--red);color:var(--red)}
-.toast.blue{border-color:var(--acc);color:var(--acc2)}
-
-/* ── MONTH WINNER BANNER ── */
-.winner-banner{background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(168,85,247,.12));border:1px solid rgba(245,158,11,.3);border-radius:var(--radius);padding:16px;margin-bottom:14px;text-align:center}
-.winner-banner .trophy{font-size:28px;margin-bottom:6px}
-.winner-banner .wtitle{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--orange);margin-bottom:4px}
-.winner-banner .wsub{font-size:12px;color:var(--text2);line-height:1.6}
-
-/* ── EMPTY ── */
-.empty{text-align:center;padding:36px 16px;color:var(--text2)}
-.empty-icon{font-size:36px;margin-bottom:10px;opacity:.5}
-.empty-text{font-size:13px}
-
-/* ── PARENT MSG ── */
-.parent-row{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.parent-name{font-size:13px;font-weight:500}
-.parent-num{font-size:12px;color:var(--text2)}
-.msg-btn{background:var(--acc-s);border:1px solid rgba(99,179,237,.2);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:600;color:var(--acc2);cursor:pointer;transition:all .2s;white-space:nowrap}
+/* ═══ PARENT MSG ═══ */
+.parent-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:13px 14px;margin-bottom:8px;
+}
+.msg-btn{background:var(--acc-s);border:1px solid rgba(255,85,103,.18);border-radius:8px;padding:7px 12px;font-size:11px;font-weight:700;color:var(--acc2);cursor:pointer;transition:all .2s;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif}
 .msg-btn:hover{background:var(--acc);color:#fff}
 
-/* ── ANIMATIONS ── */
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideUp{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}
-.stagger>*{animation:fadeUp .4s ease both}
-.stagger>*:nth-child(1){animation-delay:.04s}.stagger>*:nth-child(2){animation-delay:.08s}
-.stagger>*:nth-child(3){animation-delay:.12s}.stagger>*:nth-child(4){animation-delay:.16s}
-.stagger>*:nth-child(5){animation-delay:.20s}.stagger>*:nth-child(6){animation-delay:.24s}
+/* ═══ MODAL ═══ */
+.modal-ov{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+.modal-ov.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px 20px 0 0;width:100%;max-width:520px;padding:24px 20px 36px;max-height:88vh;overflow-y:auto;animation:slideUp .3s cubic-bezier(.22,.68,0,1.2) both}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.mh-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700}
+.mcl{background:var(--bg3);border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;color:var(--text2);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.mcl:hover{background:var(--rose-s);color:var(--rose)}
+.mfoot{display:flex;gap:8px;margin-top:18px}
+.btn-sec{flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;transition:all .2s}
+.btn-sec:hover{background:var(--bg3);color:var(--text)}
+.btn-acc-sm{padding:12px 20px;background:linear-gradient(135deg,var(--acc),var(--acc-dark));border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;transition:all .2s}
+.btn-acc-sm:hover{filter:brightness(1.1)}
 
-/* ── TABS INSIDE PANEL ── */
-.inner-tabs{display:flex;gap:4px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
-.inner-tabs::-webkit-scrollbar{display:none}
-.inner-tab{flex-shrink:0;padding:7px 14px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif}
-.inner-tab.active{background:var(--acc-s);border-color:rgba(99,179,237,.25);color:var(--acc2)}
+/* ═══ SEARCH ═══ */
+.search{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);outline:none;width:100%;margin-bottom:12px;transition:border-color .2s}
+.search:focus{border-color:var(--acc)}
+.search::placeholder{color:var(--text3)}
 
-/* MONTH SELECTOR */
-.month-sel{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--text);outline:none;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer}
+/* ═══ MONTH SEL ═══ */
+.month-sel{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text);outline:none;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 20px;font-size:13px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:500;transition:transform .4s cubic-bezier(.22,.68,0,1.2),opacity .3s;opacity:0;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.g{border-color:var(--green);color:var(--green)}
+.toast.r{border-color:var(--rose);color:var(--rose)}
+.toast.b{border-color:var(--sky);color:var(--sky)}
+
+/* ═══ EMPTY ═══ */
+.empty{text-align:center;padding:40px 16px;color:var(--text2)}
+.empty em{font-size:36px;display:block;margin-bottom:10px;opacity:.4}
+.empty p{font-size:13px}
+
+/* ═══ INNER TABS ═══ */
+.itabs{display:flex;gap:4px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
+.itabs::-webkit-scrollbar{display:none}
+.itab{flex-shrink:0;padding:7px 13px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif}
+.itab.active{background:var(--acc-s);border-color:rgba(255,85,103,.2);color:var(--acc2)}
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:translateY(0)}}
+.stagger>*:nth-child(1){animation:fadeUp .35s .04s ease both}
+.stagger>*:nth-child(2){animation:fadeUp .35s .08s ease both}
+.stagger>*:nth-child(3){animation:fadeUp .35s .12s ease both}
+.stagger>*:nth-child(4){animation:fadeUp .35s .16s ease both}
+.stagger>*:nth-child(5){animation:fadeUp .35s .20s ease both}
+.stagger>*:nth-child(6){animation:fadeUp .35s .24s ease both}
 </style>
 </head>
 <body>
 
-<!-- ══ LOGIN ══ -->
+<!-- ══════════ LOGIN ══════════ -->
 <div id="loginScreen">
-  <div class="l-logo">
-    <div class="l-logo-icon">📐</div>
-    <div class="l-logo-text">Math<span>Class</span></div>
-  </div>
-  <div class="l-card">
-    <div class="l-title">Xoş gəlmisiniz</div>
-    <div class="l-sub">Sinif panelinə daxil olun</div>
-    <div class="role-sw">
-      <button class="role-btn active" id="rTeacher" onclick="setRole('teacher')">👩‍🏫 Müəllim</button>
-      <button class="role-btn" id="rStudent" onclick="setRole('student')">🎓 Şagird</button>
+  <div class="login-left">
+    <div class="login-art">
+      <div class="login-art-bg">Аз</div>
+      <div class="login-art-overlay"></div>
     </div>
-    <div class="field"><label>İstifadəçi adı</label><input id="lUser" type="text" placeholder="ad.soyad" value="muellim"/></div>
-    <div class="field"><label>Şifrə</label><input id="lPass" type="password" placeholder="••••••" value="1234"/></div>
-    <button class="btn-p" onclick="doLogin()">Daxil ol →</button>
+    <div class="login-brand">
+      <div class="login-icon">🖊️</div>
+      <div class="login-brand-name">Az<span>Dili</span></div>
+      <div class="login-brand-tag">"Dil — millətin ruhu, xalqın güzgüsüdür."</div>
+      <div class="login-brand-pills">
+        <div class="login-pill">📚 Azərbaycan Dili</div>
+        <div class="login-pill">✍️ Ədəbiyyat</div>
+        <div class="login-pill">🏫 Sinif İdarəsi</div>
+      </div>
+    </div>
+  </div>
+  <div class="login-right">
+    <div class="l-title">Daxil ol</div>
+    <div class="l-sub">Sinif panelinə giriş edin</div>
+    <div class="role-sw">
+      <button class="role-btn active" id="rT" onclick="setRole('teacher')">👩‍🏫 Müəllim</button>
+      <button class="role-btn" id="rS" onclick="setRole('student')">🎓 Şagird</button>
+    </div>
+    <div class="field"><label>İstifadəçi adı</label><input class="fi" id="lU" value="muellim" placeholder="ad.soyad"/></div>
+    <div class="field"><label>Şifrə</label><input class="fi" id="lP" type="password" value="1234" placeholder="••••••"/></div>
+    <button class="btn-acc" onclick="doLogin()">Daxil ol →</button>
     <div class="demo-hint">
-      <strong>Demo giriş:</strong>
-      Müəllim: <code>muellim / 1234</code><br>
-      Şagird: <code>ayse / 1234</code> (və ya istənilən şagird adı)
+      <b>Demo giriş:</b>
+      Müəllim: <code>muellim</code> / <code>1234</code><br>
+      Şagird: <code>aytən</code> / <code>1234</code> (və ya istənilən şagird adı)
     </div>
   </div>
 </div>
 
-<!-- ══ APP ══ -->
+<!-- ══════════ APP ══════════ -->
 <div id="app">
   <div class="topbar">
     <div class="tb-left">
-      <div class="tb-logo">Math<span>Class</span></div>
-      <div class="tb-badge" id="roleBadge">Müəllim</div>
+      <div class="tb-logo">Az<span>Dili</span></div>
+      <div class="tb-rolebadge" id="roleBadge">Müəllim</div>
     </div>
     <div class="tb-right">
-      <div class="avatar" id="userAvatar">M</div>
-      <button class="logout-btn" onclick="doLogout()">Çıxış</button>
+      <div class="av" id="userAv">M</div>
+      <div class="tb-name" id="userName">Müəllim</div>
+      <button class="out-btn" onclick="doLogout()">Çıxış</button>
     </div>
   </div>
-  <div class="nav-tabs" id="navTabs"></div>
-  <div class="main" id="mainContent"></div>
+  <div class="nav" id="navEl"></div>
+  <div class="main" id="mainEl"></div>
 </div>
 
-<!-- ══ MODALS ══ -->
-<!-- Add task -->
+<!-- ══════════ MODALS ══════════ -->
+
+<!-- Add Task -->
 <div class="modal-ov" id="mTask">
   <div class="modal">
-    <div class="m-head"><div class="m-title">Yeni Tapşırıq / Dərs</div><button class="m-close" onclick="closeM('mTask')">✕</button></div>
-    <div class="field"><label>Dərs nömrəsi</label><input id="tLesson" type="number" placeholder="12" min="1"/></div>
-    <div class="field"><label>Keçilən mövzu</label><input id="tTopic" type="text" placeholder="Kəsrlərin toplanması"/></div>
-    <div class="field"><label>Ev tapşırığı (səhifə / məsələ)</label><input id="tHW" type="text" placeholder="s.45, məs. 3-8"/></div>
-    <div class="field"><label>Qeyd / xəbərdarlıq</label><textarea id="tNote" placeholder="Şagirdlər üçün əlavə qeyd..."></textarea></div>
-    <div class="field"><label>Tarix</label><input id="tDate" type="date"/></div>
-    <div class="m-footer">
+    <div class="mh"><div class="mh-title">Yeni Tapşırıq / Dərs</div><button class="mcl" onclick="closeM('mTask')">✕</button></div>
+    <div class="field"><label>Dərs nömrəsi</label><input class="fi" id="tLesson" type="number" placeholder="1" min="1"/></div>
+    <div class="field"><label>Keçilən mövzu</label><input class="fi" id="tTopic" placeholder="Nitq hissələri — İsim"/></div>
+    <div class="field"><label>Ev tapşırığı (səhifə / məsələ)</label><input class="fi" id="tHW" placeholder="s.34, çalışma 5–9"/></div>
+    <div class="field"><label>Qeyd / xəbərdarlıq</label><textarea class="fi" id="tNote" placeholder="Şagirdlərə əlavə qeyd..."></textarea></div>
+    <div class="field"><label>Tarix</label><input class="fi" id="tDate" type="date"/></div>
+    <div class="mfoot">
       <button class="btn-sec" onclick="closeM('mTask')">Ləğv</button>
-      <button class="btn-p-sm" onclick="addTask()">Göndər</button>
+      <button class="btn-acc-sm" onclick="addTask()">Göndər</button>
     </div>
   </div>
 </div>
 
-<!-- Notice -->
+<!-- Add Notice -->
 <div class="modal-ov" id="mNotice">
   <div class="modal">
-    <div class="m-head"><div class="m-title">Yeni Elan</div><button class="m-close" onclick="closeM('mNotice')">✕</button></div>
-    <div class="field"><label>Başlıq</label><input id="nTitle" type="text" placeholder="Elan başlığı"/></div>
-    <div class="field"><label>Məzmun</label><textarea id="nBody" placeholder="Elanın məzmunu..."></textarea></div>
-    <div class="m-footer">
+    <div class="mh"><div class="mh-title">Yeni Elan</div><button class="mcl" onclick="closeM('mNotice')">✕</button></div>
+    <div class="field"><label>Başlıq</label><input class="fi" id="nTitle" placeholder="Elan başlığı"/></div>
+    <div class="field"><label>Məzmun</label><textarea class="fi" id="nBody" placeholder="Elanın məzmunu..."></textarea></div>
+    <div class="mfoot">
       <button class="btn-sec" onclick="closeM('mNotice')">Ləğv</button>
-      <button class="btn-p-sm" onclick="addNotice()">Yayımla</button>
+      <button class="btn-acc-sm" onclick="addNotice()">Yayımla</button>
     </div>
   </div>
 </div>
 
-<!-- Add student -->
+<!-- Add Student -->
 <div class="modal-ov" id="mAddStu">
   <div class="modal">
-    <div class="m-head"><div class="m-title">Şagird Əlavə Et</div><button class="m-close" onclick="closeM('mAddStu')">✕</button></div>
-    <div class="field"><label>Ad Soyad</label><input id="asName" type="text" placeholder="Aysel Hüseynova"/></div>
-    <div class="field"><label>İstifadəçi adı</label><input id="asUser" type="text" placeholder="aysel.h"/></div>
-    <div class="field"><label>Valideyn adı</label><input id="asParent" type="text" placeholder="Hüseyn Hüseynov"/></div>
-    <div class="field"><label>Valideyn nömrəsi</label><input id="asPhone" type="tel" placeholder="+994 50 000 00 00"/></div>
-    <div class="m-footer">
+    <div class="mh"><div class="mh-title">Şagird Əlavə Et</div><button class="mcl" onclick="closeM('mAddStu')">✕</button></div>
+    <div class="field"><label>Ad Soyad</label><input class="fi" id="asName" placeholder="Aytən Hüseynova"/></div>
+    <div class="field"><label>İstifadəçi adı (giriş üçün)</label><input class="fi" id="asUser" placeholder="aytən"/></div>
+    <div class="field"><label>Valideyn adı</label><input class="fi" id="asParent" placeholder="Hüseyn Hüseynov"/></div>
+    <div class="field"><label>Valideyn nömrəsi</label><input class="fi" id="asPhone" type="tel" placeholder="+994 50 000 00 00"/></div>
+    <div class="mfoot">
       <button class="btn-sec" onclick="closeM('mAddStu')">Ləğv</button>
-      <button class="btn-p-sm" onclick="addStudent()">Əlavə Et</button>
+      <button class="btn-acc-sm" onclick="addStudent()">Əlavə Et</button>
     </div>
   </div>
 </div>
 
-<!-- Grade modal -->
+<!-- Grade Modal -->
 <div class="modal-ov" id="mGrade">
   <div class="modal">
-    <div class="m-head"><div class="m-title" id="mGradeTitle">Qiymətlər</div><button class="m-close" onclick="closeM('mGrade')">✕</button></div>
+    <div class="mh"><div class="mh-title" id="mGradeTitle">Qiymətlər</div><button class="mcl" onclick="closeM('mGrade')">✕</button></div>
     <div id="mGradeBody"></div>
-    <div class="m-footer">
+    <div class="mfoot">
       <button class="btn-sec" onclick="closeM('mGrade')">Bağla</button>
-      <button class="btn-p-sm" onclick="saveGrades()">Saxla</button>
+      <button class="btn-acc-sm" onclick="saveGrades()">Saxla</button>
     </div>
   </div>
 </div>
 
-<!-- Attendance modal -->
+<!-- Att Modal -->
 <div class="modal-ov" id="mAtt">
   <div class="modal">
-    <div class="m-head"><div class="m-title" id="mAttTitle">Davamiyyət</div><button class="m-close" onclick="closeM('mAtt')">✕</button></div>
+    <div class="mh"><div class="mh-title" id="mAttTitle">Davamiyyət</div><button class="mcl" onclick="closeM('mAtt')">✕</button></div>
+    <div style="display:flex;gap:6px;margin-bottom:14px;font-size:11px;color:var(--text2)">
+      <span class="chip g">✓ İştirak</span>
+      <span class="chip r">✗ Qayib</span>
+      <span class="chip o">~ Gecikdi</span>
+    </div>
     <div id="mAttBody"></div>
-    <div class="m-footer">
+    <div class="mfoot">
       <button class="btn-sec" onclick="closeM('mAtt')">Bağla</button>
-      <button class="btn-p-sm" onclick="saveAtt()">Saxla</button>
+      <button class="btn-acc-sm" onclick="saveAtt()">Saxla</button>
     </div>
   </div>
 </div>
 
-<!-- Parent message modal -->
+<!-- Parent Msg -->
 <div class="modal-ov" id="mParent">
   <div class="modal">
-    <div class="m-head"><div class="m-title" id="mParentTitle">Valideynə Mesaj</div><button class="m-close" onclick="closeM('mParent')">✕</button></div>
-    <div id="mParentInfo" style="background:var(--bg3);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--text2)"></div>
-    <div class="field"><label>Mesaj</label><textarea id="parentMsg" placeholder="Valideynə yazacağınız mesajı daxil edin..."></textarea></div>
-    <div class="m-footer">
+    <div class="mh"><div class="mh-title" id="mParentTitle">Valideynə Mesaj</div><button class="mcl" onclick="closeM('mParent')">✕</button></div>
+    <div id="mParentInfo" style="background:var(--bg3);border-radius:10px;padding:13px 14px;margin-bottom:14px;font-size:13px;color:var(--text2);line-height:1.6"></div>
+    <div class="field"><label>Mesaj</label><textarea class="fi" id="parentMsg" placeholder="Valideynə yazılacaq mesaj..."></textarea></div>
+    <div class="mfoot">
       <button class="btn-sec" onclick="closeM('mParent')">Ləğv</button>
-      <button class="btn-p-sm" onclick="sendParentMsg()">Göndər</button>
+      <button class="btn-acc-sm" onclick="sendParentMsg()">Göndər</button>
     </div>
   </div>
 </div>
 
-<!-- Student detail modal -->
-<div class="modal-ov" id="mStuDetail">
+<!-- Student Detail -->
+<div class="modal-ov" id="mStuDet">
   <div class="modal">
-    <div class="m-head"><div class="m-title" id="sdName">Şagird</div><button class="m-close" onclick="closeM('mStuDetail')">✕</button></div>
+    <div class="mh"><div class="mh-title" id="sdTitle">Şagird</div><button class="mcl" onclick="closeM('mStuDet')">✕</button></div>
     <div id="sdBody"></div>
   </div>
 </div>
 
-<!-- Toast -->
+<!-- Student Pay Modal -->
+<div class="modal-ov" id="mStuPay">
+  <div class="modal">
+    <div class="mh"><div class="mh-title" id="spTitle">Ödəniş Et</div><button class="mcl" onclick="closeM('mStuPay')">✕</button></div>
+    <div id="spBody"></div>
+    <div class="mfoot">
+      <button class="btn-sec" onclick="closeM('mStuPay')">Bağla</button>
+      <button class="btn-acc-sm" onclick="markPaid()">✓ Ödənildi Kimi İşarələ</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-/* ════════════════════════════════════════
-   DATA
-════════════════════════════════════════ */
-const MONTHS = ['Yanvar','Fevral','Mart','Aprel','May','İyun','İyul','Avqust','Sentyabr','Oktyabr','Noyabr','Dekabr'];
-const NOW_MONTH = 4; // May (0-based)
-const NOW_YEAR  = 2025;
+/* ═══════════════════════════════════════
+   TEACHER INFO
+═══════════════════════════════════════ */
+const TEACHER = {
+  name: 'Çinar Əliyeva',
+  role: 'Azərbaycan Dili Müəllimi',
+  phone: '+994 50 234 56 78',
+  address: 'Bakı şəhəri, Nəsimi rayonu, Əliağa Vahid küç. 12',
+  school: 'Bakı Şəhər 132 nömrəli tam orta məktəb',
+  card: '4169 7388 **** 2241',
+  cardHolder: 'CHINAR ALIYEVA',
+  monthlyFee: 80,
+  subject: 'Azərbaycan Dili və Ədəbiyyat',
+};
 
-// 30 students
-const STUDENTS = [
-  {id:1, name:'Aysel Hüseynova',   user:'ayse',    parent:'Hüseyn Hüseynov',   phone:'+994501234501'},
-  {id:2, name:'Orxan Quliyev',     user:'orxan',   parent:'Qulu Quliyev',       phone:'+994512234502'},
-  {id:3, name:'Nərmin Əliyeva',    user:'nermin',  parent:'Əli Əliyev',         phone:'+994701234503'},
-  {id:4, name:'Tural Babayev',     user:'tural',   parent:'Baba Babayev',       phone:'+994551234504'},
-  {id:5, name:'Günel Məmmədova',   user:'gunel',   parent:'Məmməd Məmmədov',    phone:'+994501234505'},
-  {id:6, name:'Rauf İsmayılov',    user:'rauf',    parent:'İsmayıl İsmayılov',  phone:'+994512234506'},
-  {id:7, name:'Sevinc Rzayeva',    user:'sevinc',  parent:'Rza Rzayev',         phone:'+994701234507'},
-  {id:8, name:'Elnur Qəhrəmanov',  user:'elnur',   parent:'Qəhrəman Qəhrəmanov',phone:'+994551234508'},
-  {id:9, name:'Leyla Əhmədova',    user:'leyla',   parent:'Əhməd Əhmədov',      phone:'+994501234509'},
-  {id:10,name:'Kamran Nəsirov',    user:'kamran',  parent:'Nəsir Nəsirov',      phone:'+994512234510'},
-  {id:11,name:'Zülfiyyə Həsənova', user:'zulfi',   parent:'Həsən Həsənov',      phone:'+994701234511'},
-  {id:12,name:'Ülvü Cəfərov',      user:'ulvu',    parent:'Cəfər Cəfərov',      phone:'+994551234512'},
-  {id:13,name:'Könül Sultanova',   user:'konul',   parent:'Sultan Sultanov',    phone:'+994501234513'},
-  {id:14,name:'Anar Həsənli',      user:'anar',    parent:'Həsən Həsənli',      phone:'+994512234514'},
-  {id:15,name:'Şəbnəm Rəhimova',   user:'sebnem',  parent:'Rəhim Rəhimov',      phone:'+994701234515'},
-  {id:16,name:'Fərid Axundov',     user:'ferid',   parent:'Axund Axundov',      phone:'+994551234516'},
-  {id:17,name:'Nigar Abbasova',    user:'nigar',   parent:'Abbas Abbasov',      phone:'+994501234517'},
-  {id:18,name:'Vüsal Hümbətov',    user:'vusal',   parent:'Hümbət Hümbətov',    phone:'+994512234518'},
-  {id:19,name:'Aytən Musayeva',    user:'ayten',   parent:'Musa Musayev',       phone:'+994701234519'},
-  {id:20,name:'Ramil Kərimov',     user:'ramil',   parent:'Kərim Kərimov',      phone:'+994551234520'},
-  {id:21,name:'Samirə Mirzəyeva',  user:'samire',  parent:'Mirzə Mirzəyev',     phone:'+994501234521'},
-  {id:22,name:'Rəşad Əliyev',      user:'resad',   parent:'Əli Əliyev 2',       phone:'+994512234522'},
-  {id:23,name:'Xədicə Yusifova',   user:'xedice',  parent:'Yusif Yusifov',      phone:'+994701234523'},
-  {id:24,name:'Murad Cavadov',     user:'murad',   parent:'Cavad Cavadov',      phone:'+994551234524'},
-  {id:25,name:'Türkan Novruzova',  user:'turkan',  parent:'Novruz Novruzov',    phone:'+994501234525'},
-  {id:26,name:'Elçin Qasımov',     user:'elcin',   parent:'Qasım Qasımov',      phone:'+994512234526'},
-  {id:27,name:'Afət İbrahimova',   user:'afet',    parent:'İbrahim İbrahimov',  phone:'+994701234527'},
-  {id:28,name:'Ceyhun Məmişov',    user:'ceyhun',  parent:'Məmiş Məmişov',      phone:'+994551234528'},
-  {id:29,name:'Lalə Qurbanova',    user:'lale',    parent:'Qurban Qurbanov',    phone:'+994501234529'},
-  {id:30,name:'Emil Paşayev',      user:'emil',    parent:'Paşa Paşayev',       phone:'+994512234530'},
+/* ═══════════════════════════════════════
+   STUDENTS (10)
+═══════════════════════════════════════ */
+let STUDENTS = [
+  {id:1, name:'Aytən Rəhimova',   user:'aytən',   parent:'Rəhim Rəhimov',     phone:'+994501112201'},
+  {id:2, name:'Orxan Quliyev',    user:'orxan',   parent:'Qulu Quliyev',       phone:'+994512112202'},
+  {id:3, name:'Nərmin Əliyeva',   user:'nərmin',  parent:'Əli Əliyev',         phone:'+994701112203'},
+  {id:4, name:'Tural Babayev',    user:'tural',   parent:'Baba Babayev',       phone:'+994551112204'},
+  {id:5, name:'Günel Hüseynova',  user:'günel',   parent:'Hüseyn Hüseynov',    phone:'+994501112205'},
+  {id:6, name:'Rauf İsmayılov',   user:'rauf',    parent:'İsmayıl İsmayılov',  phone:'+994512112206'},
+  {id:7, name:'Sevinc Rzayeva',   user:'sevinc',  parent:'Rza Rzayev',         phone:'+994701112207'},
+  {id:8, name:'Elnur Cəfərov',    user:'elnur',   parent:'Cəfər Cəfərov',      phone:'+994551112208'},
+  {id:9, name:'Könül Sultanova',  user:'könül',   parent:'Sultan Sultanov',    phone:'+994501112209'},
+  {id:10,name:'Kamran Nəsirov',   user:'kamran',  parent:'Nəsir Nəsirov',      phone:'+994512112210'},
 ];
 
-// tasks: {id, lesson, topic, hw, note, date, month}
+/* TASKS */
 let tasks = [
-  {id:1,lesson:1,topic:'Tam ədədlər — Giriş',        hw:'s.12, məs.1-5',  note:'Riyaziyyat dəftərini gətirin.',    date:'2025-04-01',month:3},
-  {id:2,lesson:2,topic:'Toplama və çıxma',            hw:'s.18, məs.6-12', note:'',                                  date:'2025-04-03',month:3},
-  {id:3,lesson:3,topic:'Vurma cədvəlinin təkrarı',   hw:'s.22, məs.1-10', note:'Test hazırlığı üçün təkrar edin.', date:'2025-04-08',month:3},
-  {id:4,lesson:4,topic:'Kəsrlər — Anlayış',          hw:'s.30, məs.3-8',  note:'',                                  date:'2025-04-10',month:3},
-  {id:5,lesson:5,topic:'Kəsrlərin toplanması',        hw:'s.35, məs.1-6',  note:'Çətin məsələlər üçün kömək istəyin.',date:'2025-04-15',month:3},
-  {id:6,lesson:6,topic:'Faizlər',                     hw:'s.40, məs.5-10', note:'',                                  date:'2025-04-22',month:3},
-  {id:7,lesson:7,topic:'Tənliklər — Giriş',          hw:'s.48, məs.2-7',  note:'Sinifdə yoxlanılacaq.',            date:'2025-05-01',month:4},
-  {id:8,lesson:8,topic:'Həndəsə — Sahə hesabı',      hw:'s.55, məs.1-5',  note:'Cetvel gətirin.',                  date:'2025-05-06',month:4},
+  {id:1,lesson:1,topic:'Azərbaycan dilinin tarixi',     hw:'s.5, sual 1–4',   note:'Dərsliyi gətirin.',         date:'2025-04-01',month:3},
+  {id:2,lesson:2,topic:'Nitq hissələri — İsim',         hw:'s.12, çal. 3–7',  note:'',                           date:'2025-04-03',month:3},
+  {id:3,lesson:3,topic:'Sifət, say, əvəzlik',           hw:'s.18, çal. 1–5',  note:'Nümunə cümlələr yazın.',    date:'2025-04-08',month:3},
+  {id:4,lesson:4,topic:'Feil — zamanlar',               hw:'s.24, çal. 6–10', note:'',                           date:'2025-04-15',month:3},
+  {id:5,lesson:5,topic:'Cümlə üzvləri',                 hw:'s.30, çal. 2–6',  note:'Sinifdə yoxlanacaq.',       date:'2025-04-22',month:3},
+  {id:6,lesson:6,topic:'Mürəkkəb cümlələr',             hw:'s.36, çal. 1–4',  note:'',                           date:'2025-05-02',month:4},
+  {id:7,lesson:7,topic:'Ədəbi dil normaları',           hw:'s.42, çal. 3–8',  note:'Test hazırlığı vacibdir.',  date:'2025-05-07',month:4},
 ];
-let taskSeq = 9;
+let taskSeq = 8;
 
-// grades[month][taskId][studentId] = 0-10
+/* GRADES grades[month][taskId][stuId] = 0–10 */
 let grades = {};
-(function initGrades(){
+(function(){
   [3,4].forEach(m=>{
     grades[m]={};
     tasks.filter(t=>t.month===m).forEach(t=>{
       grades[m][t.id]={};
       STUDENTS.forEach(s=>{
-        if(m===3) grades[m][t.id][s.id]=Math.max(0,Math.min(10,Math.round(5+Math.random()*5+(s.id%3))));
-        else if(t.id<=8) grades[m][t.id][s.id]=Math.max(0,Math.min(10,Math.round(5+Math.random()*5+(s.id%3))));
+        grades[m][t.id][s.id]=+(Math.max(4,Math.min(10,(6+Math.random()*4+(s.id%3)*.5))).toFixed(1));
       });
     });
   });
 })();
 
-// attendance[taskId][studentId] = 'present'|'absent'|null
-let attendance = {};
-(function initAtt(){
+/* ATTENDANCE att[taskId][stuId]='present'|'absent'|'late' */
+let attendance={};
+(function(){
   tasks.forEach(t=>{
     attendance[t.id]={};
     STUDENTS.forEach(s=>{
-      attendance[t.id][s.id] = Math.random()<0.9 ? 'present' : 'absent';
+      const r=Math.random();
+      attendance[t.id][s.id]=r<.82?'present':r<.92?'late':'absent';
     });
   });
 })();
 
-// notices
-let notices = [
-  {id:1,title:'İmtahan tarixi — 20 May',body:'Yarımillik yoxlama işi 20 may tarixindədir. Mövzular: Kəsrlər, Faizlər, Tənliklər.',date:'6 may',month:4},
-  {id:2,title:'Növbəti dərs — Həndəsə',body:'Cümə dərsinə cətvel və pergel gətirin.',date:'5 may',month:4},
+/* PAYMENTS pay[stuId][month]='paid'|'unpaid' */
+let payments={};
+STUDENTS.forEach(s=>{
+  payments[s.id]={};
+  [1,2,3,4].forEach(m=>{payments[s.id][m]=m<4?'paid':Math.random()<.5?'paid':'unpaid';});
+});
+
+/* NOTICES */
+const NOW_M=4, NOW_Y=2025;
+const MONTHS=['Yanvar','Fevral','Mart','Aprel','May','İyun','İyul','Avqust','Sentyabr','Oktyabr','Noyabr','Dekabr'];
+let notices=[
+  {id:1,title:'İmtahan tarixi açıqlandı',body:'20 may tarixində yarımillik yoxlama işi keçiriləcək. Mövzular: Nitq hissələri, Cümlə üzvləri, Mürəkkəb cümlələr.',date:'7 may'},
+  {id:2,title:'Növbəti dərsdə inşa',body:'8-ci dərsdə "Ana dili" mövzusunda inşa yazılacaq. Hazırlaşın.',date:'5 may'},
 ];
-let noticeSeq = 3;
+let noticeSeq=3;
 
-/* ════════════════════════════════════════
-   AUTH & STATE
-════════════════════════════════════════ */
-let role = 'teacher';
-let currentSid = null;
-let gradingTaskId = null;
-let attTaskId = null;
-let parentMsgSid = null;
-let activePanel = '';
-let selectedMonth = NOW_MONTH;
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let role='teacher', currentSid=null, activeTab='', gradingTid=null, attTid=null, parentSid=null, payingSid=null, payingMonth=null;
 
+/* ═══════════════════════════════════════
+   AUTH
+═══════════════════════════════════════ */
 function setRole(r){
   role=r;
-  document.getElementById('rTeacher').classList.toggle('active',r==='teacher');
-  document.getElementById('rStudent').classList.toggle('active',r==='student');
-  document.getElementById('lUser').value = r==='teacher'?'muellim':'ayse';
+  document.getElementById('rT').classList.toggle('active',r==='teacher');
+  document.getElementById('rS').classList.toggle('active',r==='student');
+  document.getElementById('lU').value=r==='teacher'?'muellim':'aytən';
 }
-
 function doLogin(){
-  const u=document.getElementById('lUser').value.trim();
-  const p=document.getElementById('lPass').value.trim();
-  if(!u||!p){showToast('Məlumatları daxil edin','');return;}
+  const u=document.getElementById('lU').value.trim().toLowerCase();
+  const p=document.getElementById('lP').value.trim();
+  if(!u||!p){showToast('Məlumatları daxil edin','r');return;}
   if(role==='teacher'){
     if(u==='muellim'&&p==='1234'){launchApp('teacher',null);}
-    else showToast('Yanlış giriş','');
+    else showToast('Yanlış giriş məlumatları','r');
   } else {
-    const s=STUDENTS.find(x=>x.user===u);
+    const s=STUDENTS.find(x=>x.user.toLowerCase()===u);
     if(s&&p==='1234'){currentSid=s.id;launchApp('student',s);}
-    else showToast('Yanlış giriş','');
+    else showToast('Şagird tapılmadı','r');
   }
 }
-
 function doLogout(){
   document.getElementById('app').style.display='none';
   document.getElementById('loginScreen').style.display='flex';
+  document.body.classList.remove('student-mode');
   currentSid=null;
 }
 
-/* ════════════════════════════════════════
-   THEME
-════════════════════════════════════════ */
-function applyTheme(r){
-  const root=document.documentElement.style;
-  if(r==='teacher'){
-    root.setProperty('--acc','#e8243b');
-    root.setProperty('--acc2','#ff5567');
-    root.setProperty('--acc-s','rgba(232,36,59,.13)');
-    root.setProperty('--acc-dark','#8b0e1c');
-  } else {
-    root.setProperty('--acc','#3b82f6');
-    root.setProperty('--acc2','#60a5fa');
-    root.setProperty('--acc-s','rgba(59,130,246,.13)');
-    root.setProperty('--acc-dark','#1d4ed8');
-  }
-}
-
-/* ════════════════════════════════════════
+/* ═══════════════════════════════════════
    LAUNCH
-════════════════════════════════════════ */
+═══════════════════════════════════════ */
 function launchApp(r,stu){
-  applyTheme(r);
   document.getElementById('loginScreen').style.display='none';
   const app=document.getElementById('app');
   app.style.display='flex';
+  if(r==='student') document.body.classList.add('student-mode');
+  else document.body.classList.remove('student-mode');
   document.getElementById('roleBadge').textContent=r==='teacher'?'Müəllim':'Şagird';
-  document.getElementById('userAvatar').textContent=r==='teacher'?'M':stu.name[0];
+  document.getElementById('userAv').textContent=r==='teacher'?'Ç':(stu?stu.name[0]:'S');
+  document.getElementById('userName').textContent=r==='teacher'?TEACHER.name:(stu?stu.name:'');
   buildNav(r);
 }
 
 function buildNav(r){
-  const tabs=document.getElementById('navTabs');
-  tabs.innerHTML='';
-  const defs = r==='teacher' ? [
-    {id:'dash',  label:'📊 Panel'},
-    {id:'tasks', label:'📋 Tapşırıqlar'},
-    {id:'att',   label:'📅 Davamiyyət'},
-    {id:'grades',label:'✏️ Qiymət'},
-    {id:'stus',  label:'👥 Şagirdlər'},
-    {id:'parent',label:'📱 Valideyn'},
-    {id:'notices',label:'📢 Elanlar'},
-  ] : [
-    {id:'sdash',  label:'🏠 Panel'},
-    {id:'stasks', label:'📚 Tapşırıqlar'},
-    {id:'sresults',label:'📈 Qiymətlər'},
-    {id:'slead',  label:'🏆 Liderboard'},
-    {id:'satt',   label:'📅 Davamiyyət'},
+  const nav=document.getElementById('navEl');
+  nav.innerHTML='';
+  const tabs=r==='teacher'?[
+    {id:'t-dash',  l:'📊 Home'},
+    {id:'t-tasks', l:'📋 Tapşırıqlar'},
+    {id:'t-att',   l:'📅 Davamiyyət'},
+    {id:'t-grades',l:'✏️ Qiymət'},
+    {id:'t-stus',  l:'👥 Şagirdlər'},
+    {id:'t-pay',   l:'💳 Ödəniş'},
+    {id:'t-parent',l:'📱 Valideyn'},
+    {id:'t-notices',l:'📢 Elanlar'},
+    {id:'t-about', l:'ℹ️ Haqqında'},
+  ]:[
+    {id:'s-dash',  l:'🏠 Home'},
+    {id:'s-tasks', l:'📚 Tapşırıqlar'},
+    {id:'s-results',l:'📈 Qiymətlər'},
+    {id:'s-lead',  l:'🏆 Liderboard'},
+    {id:'s-att',   l:'📅 Davamiyyət'},
+    {id:'s-pay',   l:'💳 Ödəniş'},
   ];
-  defs.forEach((d,i)=>{
+  tabs.forEach((t,i)=>{
     const b=document.createElement('button');
     b.className='nav-tab'+(i===0?' active':'');
-    b.textContent=d.label;
+    b.textContent=t.l;
     b.onclick=()=>{
       document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
       b.classList.add('active');
-      renderPanel(d.id);
+      go(t.id);
     };
-    tabs.appendChild(b);
+    nav.appendChild(b);
   });
-  renderPanel(defs[0].id);
+  go(tabs[0].id);
 }
 
-function renderPanel(id){
-  activePanel=id;
-  const mc=document.getElementById('mainContent');
-  mc.innerHTML='<div class="panel active" id="dynPanel"></div>';
-  const p=document.getElementById('dynPanel');
-  const fn={
-    dash:renderDash, tasks:renderTasks, att:renderAttPanel,
-    grades:renderGradesPanel, stus:renderStudents,
-    parent:renderParentPanel, notices:renderNotices,
-    sdash:renderSDash, stasks:renderSTasks,
-    sresults:renderSResults, slead:renderSLead, satt:renderSAtt,
-  }[id];
-  if(fn) fn(p);
+function go(id){
+  activeTab=id;
+  const me=document.getElementById('mainEl');
+  me.innerHTML='<div class="panel active" id="dynP"></div>';
+  const p=document.getElementById('dynP');
+  ({
+    't-dash':rTDash,'t-tasks':rTTasks,'t-att':rTAtt,'t-grades':rTGrades,
+    't-stus':rTStus,'t-pay':rTPay,'t-parent':rTParent,'t-notices':rTNotices,'t-about':rTAbout,
+    's-dash':rSDash,'s-tasks':rSTasks,'s-results':rSResults,'s-lead':rSLead,'s-att':rSAtt,'s-pay':rSPay,
+  }[id]||function(){})(p);
 }
 
-/* ════════════════════════════════════════
+/* ═══════════════════════════════════════
    HELPERS
-════════════════════════════════════════ */
-function stuAvg(sid,month){
-  const mTasks=tasks.filter(t=>t.month===month);
-  const scores=mTasks.map(t=>(grades[month]?.[t.id]?.[sid]??null)).filter(x=>x!==null);
-  return scores.length ? +(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : null;
+═══════════════════════════════════════ */
+const MONTHS3=['yan','fev','mar','apr','may','iyn','iyl','avq','sen','okt','noy','dek'];
+function today(){const d=new Date();return d.getDate()+' '+MONTHS3[d.getMonth()];}
+function todayISO(){return new Date().toISOString().slice(0,10);}
+function stuAvgMonth(sid,m){
+  const t=tasks.filter(x=>x.month===m);
+  const sc=t.map(x=>grades[m]?.[x.id]?.[sid]).filter(x=>x!=null);
+  return sc.length?(sc.reduce((a,b)=>a+b,0)/sc.length).toFixed(1):null;
 }
-function overallAvg(sid){
+function stuAvgAll(sid){
   const all=[];
-  Object.keys(grades).forEach(m=>{
-    tasks.filter(t=>t.month==m).forEach(t=>{
-      const g=grades[m]?.[t.id]?.[sid];
-      if(g!=null) all.push(g);
-    });
-  });
-  return all.length ? +(all.reduce((a,b)=>a+b,0)/all.length).toFixed(1) : null;
+  Object.keys(grades).forEach(m=>tasks.filter(t=>t.month==m).forEach(t=>{const g=grades[m]?.[t.id]?.[sid];if(g!=null)all.push(g);}));
+  return all.length?(all.reduce((a,b)=>a+b,0)/all.length).toFixed(1):null;
 }
-function stuAbsent(sid){
-  let c=0;
-  Object.values(attendance).forEach(d=>{ if(d[sid]==='absent') c++; });
-  return c;
-}
-function stuAttPct(sid){
-  const total=Object.keys(attendance).length;
-  if(!total) return 100;
-  const present=Object.values(attendance).filter(d=>d[sid]==='present').length;
-  return Math.round(present/total*100);
-}
-function rankStudents(month){
-  return STUDENTS.slice().sort((a,b)=>{
-    const aa=stuAvg(a.id,month)??-1, bb=stuAvg(b.id,month)??-1;
-    return bb-aa;
-  });
-}
-function todayStr(){
-  const d=new Date();
-  return d.getDate()+' '+MONTHS[d.getMonth()].toLowerCase().slice(0,3);
-}
-function scoreColor(v){return v>=8?'g':v>=6?'b':v>=4?'o':'r'}
-function pctFill(p){return p>=80?'g':p>=60?'b':p>=40?'o':'r'}
+function stuAbs(sid){return Object.values(attendance).filter(d=>d[sid]==='absent').length;}
+function stuLate(sid){return Object.values(attendance).filter(d=>d[sid]==='late').length;}
+function stuAttPct(sid){const t=Object.keys(attendance).length;if(!t)return 100;return Math.round(Object.values(attendance).filter(d=>d[sid]==='present').length/t*100);}
+function rankByMonth(m){return STUDENTS.slice().sort((a,b)=>(+(stuAvgMonth(b.id,m)||0))-(+(stuAvgMonth(a.id,m)||0)));}
+function scoreC(v){return v>=8?'g':v>=6?'b':v>=4?'o':'r';}
+function pctC(p){return p>=80?'g':p>=60?'b':p>=40?'o':'r';}
 
-/* ════════════════════════════════════════
+/* ═══════════════════════════════════════
    TEACHER — DASHBOARD
-════════════════════════════════════════ */
-function renderDash(p){
-  const totalAbs=STUDENTS.reduce((s,st)=>s+stuAbsent(st.id),0);
-  const avgs=STUDENTS.map(s=>overallAvg(s.id)).filter(x=>x!==null);
+═══════════════════════════════════════ */
+function rTDash(p){
+  const avgs=STUDENTS.map(s=>+(stuAvgAll(s.id)||0)).filter(x=>x>0);
   const classAvg=avgs.length?(avgs.reduce((a,b)=>a+b,0)/avgs.length).toFixed(1):'—';
-  const monthTasks=tasks.filter(t=>t.month===NOW_MONTH);
-
-  // month winners for banner
-  const ranked=rankStudents(NOW_MONTH);
-  const top3=ranked.slice(0,3).filter(s=>stuAvg(s.id,NOW_MONTH)!==null);
+  const totalAbs=STUDENTS.reduce((s,st)=>s+stuAbs(st.id),0);
+  const unpaid=STUDENTS.filter(s=>payments[s.id]?.[NOW_M]==='unpaid').length;
+  const ranked=rankByMonth(NOW_M-1);
+  const top3=ranked.slice(0,3).filter(s=>stuAvgMonth(s.id,NOW_M-1));
+  const recentTask=tasks.slice(-1)[0];
 
   p.innerHTML=`
-  <div class="ms-grid stagger">
-    <div class="ms-card blue"><div class="ms-label">Şagirdlər</div><div class="ms-val">${STUDENTS.length}</div><div class="ms-sub">aktiv sinif</div></div>
-    <div class="ms-card green"><div class="ms-label">Sinif orta</div><div class="ms-val">${classAvg}</div><div class="ms-sub">10 üzərindən</div></div>
-    <div class="ms-card red"><div class="ms-label">Qayiblər</div><div class="ms-val">${totalAbs}</div><div class="ms-sub">ümumi dərs</div></div>
-    <div class="ms-card purple"><div class="ms-label">Bu ay tapşırıq</div><div class="ms-val">${monthTasks.length}</div><div class="ms-sub">${MONTHS[NOW_MONTH]} ${NOW_YEAR}</div></div>
+  <div class="stat-grid stagger">
+    <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-label">Şagirdlər</div><div class="stat-val">${STUDENTS.length}</div><div class="stat-sub">bu sinifdə</div></div>
+    <div class="stat-card g"><div class="stat-icon">📊</div><div class="stat-label">Sinif orta</div><div class="stat-val">${classAvg}</div><div class="stat-sub">10 üzərindən</div></div>
+    <div class="stat-card r"><div class="stat-icon">❌</div><div class="stat-label">Ümumi qayib</div><div class="stat-val">${totalAbs}</div><div class="stat-sub">dərs</div></div>
+    <div class="stat-card o"><div class="stat-icon">💳</div><div class="stat-label">Ödənilməmiş</div><div class="stat-val">${unpaid}</div><div class="stat-sub">bu ay</div></div>
   </div>
 
-  ${top3.length?`<div class="winner-banner">
-    <div class="trophy">🏆</div>
-    <div class="wtitle">${MONTHS[NOW_MONTH-1]} Ayının Qalibləri</div>
-    <div class="wsub">${top3.map((s,i)=>`${i+1}. ${s.name} — ${stuAvg(s.id,NOW_MONTH-1)??'—'}/10`).join('<br>')}</div>
+  ${top3.length?`<div class="notice winner" style="text-align:center">
+    <div style="font-size:28px;margin-bottom:8px">🏆</div>
+    <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--amber);margin-bottom:6px">${MONTHS[NOW_M-2]} Ayının Qalibləri</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.8">${top3.map((s,i)=>`${i===0?'🥇':i===1?'🥈':'🥉'} ${s.name} — <strong style="color:var(--text)">${stuAvgMonth(s.id,NOW_M-1)}/10</strong>`).join('<br>')}</div>
   </div>`:''}
 
-  <div class="sec-head" style="margin-top:8px"><div class="sec-title">Son tapşırıqlar</div><button class="sec-btn" onclick="openM('mTask')">+ Yeni</button></div>
-  <div class="item-list stagger" id="dashTaskList"></div>
+  <div class="sh"><div class="sh-title">Son tapşırıq</div><button class="sh-btn" onclick="openM('mTask')">+ Yeni</button></div>
+  ${recentTask?`<div class="crd" style="cursor:default">
+    <div class="crd-top">
+      <div><div class="crd-title">Dərs ${recentTask.lesson} — ${recentTask.topic}</div><div class="crd-sub">📚 ${recentTask.hw}${recentTask.note?` · 📝 ${recentTask.note}`:''}</div></div>
+      <span class="chip acc">D${recentTask.lesson}</span>
+    </div>
+    <div class="crd-meta"><span class="meta">📅 ${recentTask.date}</span></div>
+  </div>`:''}
+
+  <div class="sh" style="margin-top:16px"><div class="sh-title">Elanlar</div><button class="sh-btn" onclick="openM('mNotice')">+ Elan</button></div>
+  ${notices.slice(0,2).map(n=>`<div class="notice"><div class="notice-hd"><div class="notice-title">${n.title}</div><div class="notice-date">${n.date}</div></div><div class="notice-body">${n.body}</div></div>`).join('')||'<div class="empty"><em>📢</em><p>Elan yoxdur</p></div>'}
   `;
-
-  const tl=document.getElementById('dashTaskList');
-  tasks.slice(-4).reverse().forEach(t=>{
-    const mGrades=grades[t.month]?.[t.id]||{};
-    const vals=Object.values(mGrades);
-    const avg=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1):'—';
-    const absCount=STUDENTS.filter(s=>attendance[t.id]?.[s.id]==='absent').length;
-    tl.innerHTML+=`<div class="item-card">
-      <div class="item-top">
-        <div><div class="item-title">Dərs ${t.lesson} — ${t.topic}</div><div class="item-sub">📚 EV: ${t.hw}</div></div>
-        <span class="badge g">⌀ ${avg}</span>
-      </div>
-      <div class="item-meta">
-        <div class="meta-c">📅 ${t.date}</div>
-        <div class="meta-c">❌ ${absCount} qayib</div>
-      </div>
-    </div>`;
-  });
 }
 
-/* ════════════════════════════════════════
+/* ═══════════════════════════════════════
    TEACHER — TASKS
-════════════════════════════════════════ */
-function renderTasks(p){
+═══════════════════════════════════════ */
+function rTTasks(p){
   p.innerHTML=`
-  <div class="sec-head"><div class="sec-title">Bütün Tapşırıqlar</div><button class="sec-btn" onclick="openM('mTask')">+ Yeni tapşırıq</button></div>
-  <div class="item-list stagger" id="taskListEl"></div>`;
-  const el=document.getElementById('taskListEl');
+  <div class="sh"><div class="sh-title">Bütün Tapşırıqlar (${tasks.length})</div><button class="sh-btn" onclick="openM('mTask')">+ Yeni tapşırıq</button></div>
+  <div class="card-list stagger" id="tListEl"></div>`;
+  const el=document.getElementById('tListEl');
   tasks.slice().reverse().forEach(t=>{
-    const mG=grades[t.month]?.[t.id]||{};
-    const vals=Object.values(mG);
+    const vals=Object.values(grades[t.month]?.[t.id]||{});
     const avg=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1):'—';
-    const absC=STUDENTS.filter(s=>attendance[t.id]?.[s.id]==='absent').length;
-    const gradedC=vals.length;
-    el.innerHTML+=`<div class="item-card">
-      <div class="item-top">
+    const abs=STUDENTS.filter(s=>attendance[t.id]?.[s.id]==='absent').length;
+    const late=STUDENTS.filter(s=>attendance[t.id]?.[s.id]==='late').length;
+    el.innerHTML+=`<div class="crd">
+      <div class="crd-top">
         <div>
-          <div class="item-title">Dərs ${t.lesson} — ${t.topic}</div>
-          <div class="item-sub">📚 ${t.hw}${t.note?` · 📝 ${t.note}`:''}</div>
+          <div class="crd-title">Dərs ${t.lesson} — ${t.topic}</div>
+          <div class="crd-sub">📚 ${t.hw}${t.note?`<br>📝 ${t.note}`:''}</div>
         </div>
-        <span class="badge ${avg!=='—'?'g':'o'}">${avg!=='—'?avg+'/10':'Qiymət yox'}</span>
+        <span class="chip ${avg!=='—'?scoreC(+avg):'o'}">${avg!=='—'?avg+'/10':'—'}</span>
       </div>
-      <div class="item-meta">
-        <div class="meta-c">📅 ${t.date}</div>
-        <div class="meta-c">❌ ${absC} qayib</div>
-        <div class="meta-c">✏️ ${gradedC}/${STUDENTS.length} qiymət</div>
+      <div class="crd-meta">
+        <span class="meta">📅 ${t.date}</span>
+        <span class="meta">❌ ${abs} qayib</span>
+        <span class="meta">⏰ ${late} gecikdi</span>
       </div>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="inner-tab active" onclick="openGradeModal(${t.id})">Qiymət ver</button>
-        <button class="inner-tab active" onclick="openAttModal(${t.id})">Davamiyyət</button>
+      <div style="display:flex;gap:7px;margin-top:10px">
+        <button class="itab active" onclick="openGrade(${t.id})">✏️ Qiymət</button>
+        <button class="itab active" onclick="openAtt(${t.id})">📅 Davamiyyət</button>
       </div>
     </div>`;
   });
 }
 
-/* ════════════════════════════════════════
+/* ═══════════════════════════════════════
    TEACHER — ATTENDANCE PANEL
-════════════════════════════════════════ */
-function renderAttPanel(p){
-  const monthTasks=tasks.slice().reverse();
+═══════════════════════════════════════ */
+function rTAtt(p){
   p.innerHTML=`
-  <div class="sec-head"><div class="sec-title">Davamiyyət Cədvəli</div></div>
-  <div class="att-wrap">
-  <table class="att-table">
-  <thead><tr><th>Şagird</th>${monthTasks.map(t=>`<th style="text-align:center">D${t.lesson}</th>`).join('')}<th>%</th></tr></thead>
-  <tbody id="attBody"></tbody>
-  </table></div>`;
-  const body=document.getElementById('attBody');
+  <div class="sh"><div class="sh-title">Davamiyyət Cədvəli</div></div>
+  <div class="tbl-wrap" style="overflow-x:auto">
+  <table>
+  <thead><tr><th style="min-width:110px">Şagird</th>${tasks.map(t=>`<th style="text-align:center;min-width:36px">D${t.lesson}</th>`).join('')}<th>%</th></tr></thead>
+  <tbody id="attBodyEl"></tbody></table></div>`;
+  const body=document.getElementById('attBodyEl');
   STUDENTS.forEach(s=>{
-    const cells=monthTasks.map(t=>{
-      const st=attendance[t.id]?.[s.id]||'unset';
-      const em=st==='present'?'✓':st==='absent'?'✗':'·';
-      const cl=st==='present'?'g':st==='absent'?'r':'';
-      return `<td style="text-align:center"><span class="badge ${cl}" style="min-width:22px">${em}</span></td>`;
+    const cells=tasks.map(t=>{
+      const st=attendance[t.id]?.[s.id];
+      const sym=st==='present'?'✓':st==='absent'?'✗':st==='late'?'~':'·';
+      const cl=st==='present'?'g':st==='absent'?'r':st==='late'?'o':'';
+      return `<td style="text-align:center"><span class="chip ${cl}" style="padding:2px 6px">${sym}</span></td>`;
     }).join('');
     const pct=stuAttPct(s.id);
-    body.innerHTML+=`<tr>
-      <td style="font-weight:500;white-space:nowrap;font-size:12px">${s.name}</td>
-      ${cells}
-      <td><span class="badge ${pctFill(pct)}">${pct}%</span></td>
-    </tr>`;
+    body.innerHTML+=`<tr><td style="font-weight:600;white-space:nowrap;font-size:12px">${s.name}</td>${cells}<td><span class="chip ${pctC(pct)}">${pct}%</span></td></tr>`;
   });
 }
 
-/* ════════════════════════════════════════
+/* ═══════════════════════════════════════
    TEACHER — GRADES PANEL
-════════════════════════════════════════ */
-function renderGradesPanel(p){
+═══════════════════════════════════════ */
+function rTGrades(p){
   p.innerHTML=`
-  <div class="sec-head"><div class="sec-title">Qiymət Paneli</div>
-  <select class="month-sel" id="monthSelG" onchange="refreshGradePanel()">
-    ${[3,4].map(m=>`<option value="${m}" ${m===NOW_MONTH?'selected':''}>${MONTHS[m]} ${NOW_YEAR}</option>`).join('')}
-  </select></div>
-  <div id="gradePanelBody"></div>`;
-  refreshGradePanel();
+  <div class="sh">
+    <div class="sh-title">Qiymət Paneli</div>
+    <select class="month-sel" id="gMonthSel" onchange="refreshTGrades()">
+      ${[3,4].map(m=>`<option value="${m}" ${m===NOW_M?'selected':''}>${MONTHS[m]} ${NOW_Y}</option>`).join('')}
+    </select>
+  </div>
+  <div id="tGradesBody"></div>`;
+  refreshTGrades();
 }
-
-function refreshGradePanel(){
-  const m=parseInt(document.getElementById('monthSelG')?.value||NOW_MONTH);
-  const mTasks=tasks.filter(t=>t.month===m);
-  const body=document.getElementById('gradePanelBody');
+function refreshTGrades(){
+  const m=parseInt(document.getElementById('gMonthSel')?.value||NOW_M);
+  const body=document.getElementById('tGradesBody');
   if(!body) return;
-  if(!mTasks.length){body.innerHTML='<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">Bu ayda tapşırıq yoxdur</div></div>';return;}
+  const mTasks=tasks.filter(t=>t.month===m);
+  if(!mTasks.length){body.innerHTML='<div class="empty"><em>📭</em><p>Bu ayda tapşırıq yoxdur</p></div>';return;}
   body.innerHTML=mTasks.map(t=>{
     const vals=Object.values(grades[m]?.[t.id]||{});
     const avg=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1):'—';
-    return `<div class="item-card" style="margin-bottom:8px" onclick="openGradeModal(${t.id})">
-      <div class="item-top">
-        <div><div class="item-title">Dərs ${t.lesson} — ${t.topic}</div><div class="item-sub">${t.date}</div></div>
-        <span class="badge g">⌀ ${avg}</span>
+    return `<div class="crd" style="margin-bottom:8px">
+      <div class="crd-top">
+        <div><div class="crd-title">Dərs ${t.lesson} — ${t.topic}</div><div class="crd-sub">${t.date}</div></div>
+        <span class="chip ${avg!=='—'?scoreC(+avg):'o'}">⌀ ${avg}</span>
       </div>
-      <div class="item-meta"><div class="meta-c">✏️ ${vals.length}/${STUDENTS.length} qiymət</div></div>
+      <div class="crd-meta"><span class="meta">✏️ ${vals.length}/${STUDENTS.length} qiymət</span></div>
+      <div style="margin-top:10px"><button class="itab active" onclick="openGrade(${t.id})">Qiymətlər</button></div>
     </div>`;
   }).join('');
 }
 
-/* ════════════════════════════════════════
+/* ═══════════════════════════════════════
    TEACHER — STUDENTS
-════════════════════════════════════════ */
-function renderStudents(p){
+═══════════════════════════════════════ */
+function rTStus(p){
   p.innerHTML=`
-  <div class="sec-head"><div class="sec-title">Şagird Siyahısı</div><button class="sec-btn" onclick="openM('mAddStu')">+ Əlavə et</button></div>
-  <input class="search-box" placeholder="🔍 Ad ilə axtar..." oninput="filterStudents(this.value)"/>
+  <div class="sh"><div class="sh-title">Şagirdlər (${STUDENTS.length})</div><button class="sh-btn" onclick="openM('mAddStu')">+ Əlavə et</button></div>
+  <input class="search" placeholder="🔍 Ad ilə axtar..." oninput="filterStus(this.value)"/>
   <div id="stuListEl"></div>`;
   renderStuList(STUDENTS);
 }
-
 function renderStuList(list){
   const el=document.getElementById('stuListEl');
   if(!el) return;
-  const ranked=rankStudents(NOW_MONTH);
+  const ranked=rankByMonth(NOW_M);
   el.innerHTML=list.map(s=>{
-    const avg=overallAvg(s.id);
-    const abs=stuAbsent(s.id);
+    const avg=stuAvgAll(s.id);
     const rank=ranked.findIndex(x=>x.id===s.id)+1;
-    return `<div class="stu-card" onclick="openStuDetail(${s.id})">
+    return `<div class="stu-row" onclick="openStuDetail(${s.id})">
       <div class="stu-av">${s.name[0]}</div>
       <div class="stu-info">
         <div class="stu-name">${s.name}</div>
-        <div class="stu-meta">Reytinq: ${rank}. · Qayib: ${abs} dərs · İştirak: ${stuAttPct(s.id)}%</div>
+        <div class="stu-meta">Reytinq: ${rank}. · Qayib: ${stuAbs(s.id)} · İştirak: ${stuAttPct(s.id)}%</div>
       </div>
-      <div class="stu-score">${avg!==null?avg:'—'}</div>
+      <div class="stu-score">${avg||'—'}</div>
     </div>`;
   }).join('');
 }
+function filterStus(q){renderStuList(STUDENTS.filter(s=>s.name.toLowerCase().includes(q.toLowerCase())));}
 
-function filterStudents(q){
-  const list=STUDENTS.filter(s=>s.name.toLowerCase().includes(q.toLowerCase()));
-  renderStuList(list);
+/* ═══════════════════════════════════════
+   TEACHER — PAYMENT
+═══════════════════════════════════════ */
+function rTPay(p){
+  const paid=STUDENTS.filter(s=>payments[s.id]?.[NOW_M]==='paid').length;
+  const unpaid=STUDENTS.length-paid;
+  p.innerHTML=`
+  <div class="sh"><div class="sh-title">Ödəniş Paneli</div></div>
+  <div class="pay-card">
+    <div class="pay-card-title">Müəllim Kart Məlumatı</div>
+    <div class="pay-card-num">${TEACHER.card}</div>
+    <div class="pay-card-name">${TEACHER.cardHolder}</div>
+  </div>
+  <div class="stat-grid" style="margin-bottom:16px">
+    <div class="stat-card g"><div class="stat-label">Ödənildi</div><div class="stat-val">${paid}</div><div class="stat-sub">${MONTHS[NOW_M]} ayı</div></div>
+    <div class="stat-card r"><div class="stat-label">Gözlənir</div><div class="stat-val">${unpaid}</div><div class="stat-sub">${TEACHER.monthlyFee} ₼/ay</div></div>
+  </div>
+  <div class="sh" style="margin-top:0"><div class="sh-title">${MONTHS[NOW_M]} — Ödəniş Vəziyyəti</div></div>
+  ${STUDENTS.map(s=>{
+    const st=payments[s.id]?.[NOW_M];
+    return `<div class="pay-status-row">
+      <div>
+        <div class="pay-status-name">${s.name}</div>
+        <div class="pay-status-meta">${s.parent} · ${s.phone}</div>
+      </div>
+      <div class="pay-action">
+        <span class="${st==='paid'?'pay-paid':'pay-overdue'}">${st==='paid'?'✓ Ödənildi':'⏳ Gözlənir'}</span>
+        ${st!=='paid'?`<button class="pay-btn" onclick="tMarkPaid(${s.id},${NOW_M})">İşarələ</button>`:''}
+      </div>
+    </div>`;
+  }).join('')}`;
+}
+function tMarkPaid(sid,m){
+  payments[sid][m]='paid';
+  showToast('✓ Ödəniş qeyd edildi','g');
+  go('t-pay');
 }
 
-/* ════════════════════════════════════════
+/* ═══════════════════════════════════════
    TEACHER — PARENT
-════════════════════════════════════════ */
-function renderParentPanel(p){
+═══════════════════════════════════════ */
+function rTParent(p){
   p.innerHTML=`
-  <div class="sec-head"><div class="sec-title">Valideyn Əlaqə</div></div>
-  <input class="search-box" placeholder="🔍 Şagird adı axtar..." oninput="filterParent(this.value)"/>
+  <div class="sh"><div class="sh-title">Valideyn Əlaqə</div></div>
+  <input class="search" placeholder="🔍 Şagird adı axtar..." oninput="filterParent(this.value)"/>
   <div id="parentListEl"></div>`;
   renderParentList(STUDENTS);
 }
-
 function renderParentList(list){
   const el=document.getElementById('parentListEl');
   if(!el) return;
   el.innerHTML=list.map(s=>`
     <div class="parent-row">
       <div>
-        <div class="parent-name">${s.name}</div>
-        <div class="parent-num">👤 ${s.parent} · 📞 ${s.phone}</div>
+        <div style="font-size:13px;font-weight:700">${s.name}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">👤 ${s.parent} · 📞 ${s.phone}</div>
       </div>
-      <button class="msg-btn" onclick="openParentMsg(${s.id})">Mesaj Yaz</button>
+      <button class="msg-btn" onclick="openParentMsg(${s.id})">Mesaj</button>
     </div>`).join('');
 }
+function filterParent(q){renderParentList(STUDENTS.filter(s=>s.name.toLowerCase().includes(q.toLowerCase())));}
 
-function filterParent(q){
-  renderParentList(STUDENTS.filter(s=>s.name.toLowerCase().includes(q.toLowerCase())));
-}
-
-/* ════════════════════════════════════════
+/* ═══════════════════════════════════════
    TEACHER — NOTICES
-════════════════════════════════════════ */
-function renderNotices(p){
+═══════════════════════════════════════ */
+function rTNotices(p){
   p.innerHTML=`
-  <div class="sec-head"><div class="sec-title">Elanlar</div><button class="sec-btn" onclick="openM('mNotice')">+ Yeni elan</button></div>
+  <div class="sh"><div class="sh-title">Elanlar</div><button class="sh-btn" onclick="openM('mNotice')">+ Yeni elan</button></div>
   <div id="noticeListEl"></div>`;
   rebuildNotices();
 }
-
 function rebuildNotices(){
   const el=document.getElementById('noticeListEl');
   if(!el) return;
-  if(!notices.length){el.innerHTML='<div class="empty"><div class="empty-icon">📢</div><div class="empty-text">Elan yoxdur</div></div>';return;}
+  if(!notices.length){el.innerHTML='<div class="empty"><em>📢</em><p>Elan yoxdur</p></div>';return;}
   el.innerHTML=notices.slice().reverse().map(n=>`
-    <div class="notice-c${n.winner?' month-winner':''}">
-      <div class="n-head"><div class="n-title">${n.winner?'🏆 ':''} ${n.title}</div><div class="n-date">${n.date}</div></div>
-      <div class="n-body">${n.body}</div>
+    <div class="notice${n.winner?' winner':''}">
+      <div class="notice-hd">
+        <div class="notice-title">${n.winner?'🏆 ':''}${n.title}</div>
+        <div class="notice-date">${n.date}</div>
+      </div>
+      <div class="notice-body">${n.body}</div>
     </div>`).join('');
 }
 
-/* ════════════════════════════════════════
-   STUDENT — DASH
-════════════════════════════════════════ */
-function renderSDash(p){
-  const sid=currentSid;
-  const avg=overallAvg(sid);
-  const ranked=rankStudents(NOW_MONTH);
-  const rank=ranked.findIndex(s=>s.id===sid)+1;
-  const abs=stuAbsent(sid);
-  const attPct=stuAttPct(sid);
-  const absPenalty=abs; // 1 xal per absence counted in rank display
-
+/* ═══════════════════════════════════════
+   TEACHER — ABOUT
+═══════════════════════════════════════ */
+function rTAbout(p){
   p.innerHTML=`
-  <div class="ms-grid stagger">
-    <div class="ms-card blue"><div class="ms-label">Orta Balım</div><div class="ms-val">${avg!==null?avg:'—'}</div><div class="ms-sub">10 üzərindən</div></div>
-    <div class="ms-card green"><div class="ms-label">Reytinq</div><div class="ms-val">${rank?rank+'.':'—'}</div><div class="ms-sub">${STUDENTS.length} nəfər arasında</div></div>
-    <div class="ms-card red"><div class="ms-label">Qayiblər</div><div class="ms-val">${abs}</div><div class="ms-sub">−${absPenalty} xal cəzası</div></div>
-    <div class="ms-card purple"><div class="ms-label">İştirak</div><div class="ms-val">${attPct}%</div><div class="ms-sub">dərslərə</div></div>
+  <div class="about-hero">
+    <div class="about-av">🖊️</div>
+    <div class="about-name">${TEACHER.name}</div>
+    <div class="about-role">${TEACHER.role}</div>
+    <div class="about-pills">
+      <div class="about-pill">📚 Az dili</div>
+      <div class="about-pill">✍️ Ədəbiyyat</div>
+      <div class="about-pill">🏫 ${TEACHER.school.split(' ').slice(-4).join(' ')}</div>
+    </div>
   </div>
-  <div class="sec-head"><div class="sec-title">📢 Elanlar</div></div>
-  <div>${notices.slice().reverse().map(n=>`
-    <div class="notice-c${n.winner?' month-winner':''}">
-      <div class="n-head"><div class="n-title">${n.winner?'🏆 ':''} ${n.title}</div><div class="n-date">${n.date}</div></div>
-      <div class="n-body">${n.body}</div>
-    </div>`).join('') || '<div class="empty"><div class="empty-icon">📢</div><div class="empty-text">Elan yoxdur</div></div>'}</div>`;
+  <div class="about-info">
+    <div class="about-info-row">
+      <div class="about-info-icon">👤</div>
+      <div><div class="about-info-label">Ad Soyad</div><div class="about-info-val">${TEACHER.name}</div></div>
+    </div>
+    <div class="about-info-row">
+      <div class="about-info-icon">📞</div>
+      <div><div class="about-info-label">Telefon</div><div class="about-info-val">${TEACHER.phone}</div></div>
+    </div>
+    <div class="about-info-row">
+      <div class="about-info-icon">🏫</div>
+      <div><div class="about-info-label">Məktəb</div><div class="about-info-val">${TEACHER.school}</div></div>
+    </div>
+    <div class="about-info-row">
+      <div class="about-info-icon">📍</div>
+      <div><div class="about-info-label">Ünvan</div><div class="about-info-val">${TEACHER.address}</div></div>
+    </div>
+    <div class="about-info-row">
+      <div class="about-info-icon">💳</div>
+      <div><div class="about-info-label">Kart nömrəsi (ödəniş)</div><div class="about-info-val">${TEACHER.card} · ${TEACHER.cardHolder}</div></div>
+    </div>
+    <div class="about-info-row">
+      <div class="about-info-icon">💰</div>
+      <div><div class="about-info-label">Aylıq haqq</div><div class="about-info-val">${TEACHER.monthlyFee} ₼ / ay</div></div>
+    </div>
+  </div>
+  <div class="about-info" style="margin-bottom:0">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:12px">Sayt Haqqında</div>
+    <div class="about-info-row">
+      <div class="about-info-icon">🖥️</div>
+      <div><div class="about-info-label">Platform</div><div class="about-info-val">AzDili — Sinif İdarəetmə Sistemi</div></div>
+    </div>
+    <div class="about-info-row">
+      <div class="about-info-icon">📱</div>
+      <div><div class="about-info-label">Versiya</div><div class="about-info-val">v1.0 · Mobil uyğunlaşdırılmış</div></div>
+    </div>
+    <div class="about-info-row" style="border-bottom:none">
+      <div class="about-info-icon">🎯</div>
+      <div><div class="about-info-label">Məqsəd</div><div class="about-info-val">Tapşırıq, qiymət, davamiyyət, ödəniş və valideyn əlaqəsini vahid platformada birləşdirir.</div></div>
+    </div>
+  </div>`;
 }
 
-/* ════════════════════════════════════════
-   STUDENT — TASKS
-════════════════════════════════════════ */
-function renderSTasks(p){
+/* ═══════════════════════════════════════
+   STUDENT — DASH
+═══════════════════════════════════════ */
+function rSDash(p){
   const sid=currentSid;
-  p.innerHTML=`<div class="sec-head"><div class="sec-title">Tapşırıqlarım</div></div><div class="item-list stagger" id="sTaskListEl"></div>`;
-  const el=document.getElementById('sTaskListEl');
+  const avg=stuAvgAll(sid);
+  const ranked=rankByMonth(NOW_M);
+  const rank=ranked.findIndex(s=>s.id===sid)+1;
+  const abs=stuAbs(sid);
+  const pct=stuAttPct(sid);
+  const payStatus=payments[sid]?.[NOW_M];
+  const top3=ranked.slice(0,3).filter(s=>stuAvgMonth(s.id,NOW_M));
+
+  p.innerHTML=`
+  <div class="stat-grid stagger">
+    <div class="stat-card g"><div class="stat-icon">📊</div><div class="stat-label">Orta balım</div><div class="stat-val">${avg||'—'}</div><div class="stat-sub">10 üzərindən</div></div>
+    <div class="stat-card s"><div class="stat-icon">🏅</div><div class="stat-label">Reytinq</div><div class="stat-val">${rank?rank+'.':'—'}</div><div class="stat-sub">${STUDENTS.length} nəfər</div></div>
+    <div class="stat-card r"><div class="stat-icon">❌</div><div class="stat-label">Qayiblərim</div><div class="stat-val">${abs}</div><div class="stat-sub">−${abs} xal</div></div>
+    <div class="stat-card ${payStatus==='paid'?'g':'o'}"><div class="stat-icon">💳</div><div class="stat-label">Bu ay ödəniş</div><div class="stat-val" style="font-size:18px">${payStatus==='paid'?'Ödənildi':'Gözlənir'}</div><div class="stat-sub">${TEACHER.monthlyFee} ₼</div></div>
+  </div>
+
+  ${top3.length?`<div class="notice winner" style="text-align:center">
+    <div style="font-size:22px;margin-bottom:6px">🏆</div>
+    <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--amber);margin-bottom:6px">${MONTHS[NOW_M]} Liderboard</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.8">${top3.map((s,i)=>`${i===0?'🥇':i===1?'🥈':'🥉'} ${s.name}${s.id===sid?' <b style="color:var(--sky)">(Sən)</b>':''} — <b style="color:var(--text)">${stuAvgMonth(s.id,NOW_M)||'—'}</b>`).join('<br>')}</div>
+  </div>`:''}
+
+  <div class="sh"><div class="sh-title">📢 Elanlar</div></div>
+  ${notices.slice(0,3).map(n=>`<div class="notice${n.winner?' winner':''}"><div class="notice-hd"><div class="notice-title">${n.winner?'🏆 ':''}${n.title}</div><div class="notice-date">${n.date}</div></div><div class="notice-body">${n.body}</div></div>`).join('')||'<div class="empty"><em>📢</em><p>Elan yoxdur</p></div>'}
+  `;
+}
+
+/* ═══════════════════════════════════════
+   STUDENT — TASKS
+═══════════════════════════════════════ */
+function rSTasks(p){
+  const sid=currentSid;
+  p.innerHTML=`<div class="sh"><div class="sh-title">Tapşırıqlarım</div></div><div class="card-list stagger" id="sTasksEl"></div>`;
+  const el=document.getElementById('sTasksEl');
   tasks.slice().reverse().forEach(t=>{
     const g=grades[t.month]?.[t.id]?.[sid];
     const att=attendance[t.id]?.[sid];
-    const scored=g!==undefined;
-    el.innerHTML+=`<div class="item-card">
-      <div class="item-top">
+    el.innerHTML+=`<div class="crd" style="cursor:default">
+      <div class="crd-top">
         <div>
-          <div class="item-title">Dərs ${t.lesson} — ${t.topic}</div>
-          <div class="item-sub">📚 EV: ${t.hw}${t.note?`<br>📝 ${t.note}`:''}</div>
+          <div class="crd-title">Dərs ${t.lesson} — ${t.topic}</div>
+          <div class="crd-sub" style="line-height:1.6">📚 EV: ${t.hw}${t.note?`<br>📝 ${t.note}`:''}</div>
         </div>
-        <span class="badge ${scored?scoreColor(g):'o'}">${scored?g+'/10':'Gözlənir'}</span>
+        <span class="chip ${g!=null?scoreC(g):'o'}">${g!=null?g+'/10':'—'}</span>
       </div>
-      <div class="item-meta">
-        <div class="meta-c">📅 ${t.date}</div>
-        <div class="meta-c">${att==='present'?'✅ İştirak etdi':att==='absent'?'❌ Qayib':'—'}</div>
+      <div class="crd-meta">
+        <span class="meta">📅 ${t.date}</span>
+        <span class="meta">${att==='present'?'✅ İştirak':att==='absent'?'❌ Qayib':att==='late'?'⏰ Gecikdi':'—'}</span>
       </div>
     </div>`;
   });
 }
 
-/* ════════════════════════════════════════
+/* ═══════════════════════════════════════
    STUDENT — RESULTS
-════════════════════════════════════════ */
-function renderSResults(p){
+═══════════════════════════════════════ */
+function rSResults(p){
   const sid=currentSid;
   p.innerHTML=`
-  <div class="sec-head"><div class="sec-title">Qiymətlərim</div>
-  <select class="month-sel" onchange="this.closest('.panel').dataset.m=this.value;renderSResults(document.getElementById('dynPanel'))" >
-    ${[3,4].map(m=>`<option value="${m}" ${m===NOW_MONTH?'selected':''}>${MONTHS[m]}</option>`).join('')}
-  </select></div>
-  <div class="att-wrap"><table class="att-table">
-  <thead><tr><th>Tapşırıq</th><th>Mövzu</th><th style="text-align:center">Bal</th><th style="text-align:center">İştirak</th></tr></thead>
+  <div class="sh"><div class="sh-title">Qiymətlərim</div>
+    <select class="month-sel" id="sResMonth" onchange="refreshSResults()">
+      ${[3,4].map(m=>`<option value="${m}" ${m===NOW_M?'selected':''}>${MONTHS[m]}</option>`).join('')}
+    </select>
+  </div>
+  <div class="tbl-wrap"><table>
+  <thead><tr><th>#</th><th>Mövzu</th><th style="text-align:center">Bal</th><th style="text-align:center">İştirak</th></tr></thead>
   <tbody id="sResBody"></tbody></table></div>`;
-  const selM=p.dataset.m?parseInt(p.dataset.m):NOW_MONTH;
+  refreshSResults();
+}
+function refreshSResults(){
+  const sid=currentSid;
+  const m=parseInt(document.getElementById('sResMonth')?.value||NOW_M);
   const body=document.getElementById('sResBody');
-  const mTasks=tasks.filter(t=>t.month===selM);
-  mTasks.forEach(t=>{
-    const g=grades[selM]?.[t.id]?.[sid];
+  if(!body) return;
+  const mt=tasks.filter(t=>t.month===m);
+  if(!mt.length){body.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text2)">Bu ayda tapşırıq yoxdur</td></tr>';return;}
+  body.innerHTML=mt.map(t=>{
+    const g=grades[m]?.[t.id]?.[sid];
     const att=attendance[t.id]?.[sid];
-    const scored=g!==undefined;
-    body.innerHTML+=`<tr>
-      <td>D${t.lesson}</td>
-      <td style="font-size:11px">${t.topic}</td>
-      <td style="text-align:center"><span class="badge ${scored?scoreColor(g):'o'}">${scored?g:'-'}</span></td>
-      <td style="text-align:center">${att==='present'?'✅':att==='absent'?'❌':'—'}</td>
+    return `<tr>
+      <td style="font-weight:700">D${t.lesson}</td>
+      <td style="font-size:11px;color:var(--text2)">${t.topic}</td>
+      <td style="text-align:center"><span class="chip ${g!=null?scoreC(g):'o'}">${g!=null?g:'-'}</span></td>
+      <td style="text-align:center">${att==='present'?'✅':att==='absent'?'❌':att==='late'?'⏰':'—'}</td>
     </tr>`;
-  });
-  if(!mTasks.length) body.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text2)">Bu ayda tapşırıq yoxdur</td></tr>';
+  }).join('');
 }
 
-/* ════════════════════════════════════════
+/* ═══════════════════════════════════════
    STUDENT — LEADERBOARD
-════════════════════════════════════════ */
-function renderSLead(p){
+═══════════════════════════════════════ */
+function rSLead(p){
   const sid=currentSid;
   p.innerHTML=`
-  <div class="sec-head"><div class="sec-title">🏆 Liderboard</div>
-  <select class="month-sel" onchange="this.dataset.m=this.value;refreshSLead(parseInt(this.value))">
-    ${[3,4].map(m=>`<option value="${m}" ${m===NOW_MONTH?'selected':''}>${MONTHS[m]}</option>`).join('')}
-  </select></div>
-  <div id="lbEl"></div>`;
-  refreshSLead(NOW_MONTH);
+  <div class="sh"><div class="sh-title">🏆 Liderboard</div>
+    <select class="month-sel" id="sLeadMonth" onchange="refreshSLead()">
+      ${[3,4].map(m=>`<option value="${m}" ${m===NOW_M?'selected':''}>${MONTHS[m]}</option>`).join('')}
+    </select>
+  </div>
+  <div id="sLeadEl"></div>`;
+  refreshSLead();
 }
-
-function refreshSLead(month){
+function refreshSLead(){
   const sid=currentSid;
-  const el=document.getElementById('lbEl');
+  const m=parseInt(document.getElementById('sLeadMonth')?.value||NOW_M);
+  const el=document.getElementById('sLeadEl');
   if(!el) return;
-  const ranked=rankStudents(month);
+  const ranked=rankByMonth(m);
   el.innerHTML=ranked.map((s,i)=>{
-    const avg=stuAvg(s.id,month);
-    const abs=stuAbsent(s.id);
-    const score=avg!==null?Math.max(0,+(avg-abs*0.1).toFixed(1)):null; // abs penalty in display
+    const avg=stuAvgMonth(s.id,m);
+    const abs=stuAbs(s.id);
+    const score=avg?Math.max(0,+(+avg-abs*.1).toFixed(1)):null;
     const isMe=s.id===sid;
-    const rnkC=i===0?'r1':i===1?'r2':i===2?'r3':'rn';
+    const rc=i===0?'r1':i===1?'r2':i===2?'r3':'rn';
     return `<div class="lb-item${isMe?' me':''}">
-      <div class="lb-rank ${rnkC}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+      <div class="lb-rank ${rc}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
       <div class="lb-info">
-        <div class="lb-name">${s.name}${isMe?' <span style="font-size:10px;color:var(--acc2)">(Sən)</span>':''}</div>
-        <div class="lb-detail">⌀ ${avg??'—'}/10 · ❌ ${abs} qayib</div>
+        <div class="lb-name">${s.name}${isMe?' <span style="font-size:10px;color:var(--sky)">(Sən)</span>':''}</div>
+        <div class="lb-detail">⌀ ${avg||'—'}/10 · ❌ ${abs} qayib</div>
       </div>
-      <div class="lb-score">${score!==null?score:'—'}</div>
+      <div class="lb-score">${score!=null?score:'—'}</div>
     </div>`;
   }).join('');
 }
 
-/* ════════════════════════════════════════
+/* ═══════════════════════════════════════
    STUDENT — ATTENDANCE
-════════════════════════════════════════ */
-function renderSAtt(p){
+═══════════════════════════════════════ */
+function rSAtt(p){
   const sid=currentSid;
-  const attPct=stuAttPct(sid);
-  const abs=stuAbsent(sid);
-  const present=Object.values(attendance).filter(d=>d[sid]==='present').length;
+  const pct=stuAttPct(sid);
+  const abs=stuAbs(sid);
+  const late=stuLate(sid);
+  const pres=Object.values(attendance).filter(d=>d[sid]==='present').length;
   p.innerHTML=`
-  <div class="ms-grid" style="margin-bottom:16px">
-    <div class="ms-card green"><div class="ms-label">İştirak</div><div class="ms-val">${present}</div><div class="ms-sub">dərs</div></div>
-    <div class="ms-card red"><div class="ms-label">Qayib</div><div class="ms-val">${abs}</div><div class="ms-sub">dərs (−${abs} xal)</div></div>
+  <div class="stat-grid stagger" style="margin-bottom:16px">
+    <div class="stat-card g"><div class="stat-label">İştirak</div><div class="stat-val">${pres}</div><div class="stat-sub">dərs</div></div>
+    <div class="stat-card r"><div class="stat-label">Qayib</div><div class="stat-val">${abs}</div><div class="stat-sub">−${abs} xal cəzası</div></div>
+    <div class="stat-card o"><div class="stat-label">Gecikdi</div><div class="stat-val">${late}</div><div class="stat-sub">dəfə</div></div>
+    <div class="stat-card s"><div class="stat-label">İştirak %</div><div class="stat-val">${pct}%</div><div class="stat-sub"></div></div>
   </div>
-  <div class="prog-wrap" style="margin-bottom:20px">
-    <div class="prog-lbl"><span>İştirak faizi</span><span>${attPct}%</span></div>
-    <div class="prog-bar" style="height:8px"><div class="prog-fill ${pctFill(attPct)}" style="width:${attPct}%"></div></div>
+  <div class="pb-wrap" style="margin-bottom:20px">
+    <div class="pb-lbl"><span>Davamiyyət faizi</span><span>${pct}%</span></div>
+    <div class="pb" style="height:8px"><div class="pb-fill ${pctC(pct)}" style="width:${pct}%"></div></div>
   </div>
-  <div class="sec-head"><div class="sec-title">Dərs Tarixçəsi</div></div>
-  <div class="item-list">
+  <div class="sh"><div class="sh-title">Dərs Tarixçəsi</div></div>
+  <div class="card-list">
   ${tasks.slice().reverse().map(t=>{
     const st=attendance[t.id]?.[sid];
-    return `<div class="item-card" style="cursor:default">
-      <div class="item-top">
-        <div><div class="item-title">Dərs ${t.lesson} — ${t.topic}</div><div class="item-sub">${t.date}</div></div>
-        <span class="badge ${st==='present'?'g':st==='absent'?'r':'o'}">${st==='present'?'✅ İştirak':st==='absent'?'❌ Qayib':'—'}</span>
+    return `<div class="crd" style="cursor:default">
+      <div class="crd-top">
+        <div><div class="crd-title">Dərs ${t.lesson} — ${t.topic}</div><div class="crd-sub">${t.date}</div></div>
+        <span class="chip ${st==='present'?'g':st==='absent'?'r':st==='late'?'o':'b'}">${st==='present'?'✅ İştirak':st==='absent'?'❌ Qayib':st==='late'?'⏰ Gecikdi':'—'}</span>
       </div>
     </div>`;
   }).join('')}
   </div>`;
 }
 
-/* ════════════════════════════════════════
-   MODAL — GRADE
-════════════════════════════════════════ */
-function openGradeModal(tid){
-  gradingTaskId=tid;
-  const t=tasks.find(x=>x.id===tid);
-  document.getElementById('mGradeTitle').textContent=`Dərs ${t.lesson} — Qiymət`;
-  const body=document.getElementById('mGradeBody');
-  const m=t.month;
-  body.innerHTML=STUDENTS.map(s=>{
-    const existing=(grades[m]?.[tid]||{})[s.id]??'';
-    const abs=attendance[tid]?.[s.id]==='absent';
-    return `<div class="grade-row">
-      <div class="gname">${s.name}</div>
-      ${abs?'<span class="gabsent">❌ Qayib</span>':''}
-      <input type="number" id="gr_${s.id}" min="0" max="10" step="0.5" value="${existing}" placeholder="—"/>
-      <span style="font-size:11px;color:var(--text2)">/10</span>
+/* ═══════════════════════════════════════
+   STUDENT — PAYMENT
+═══════════════════════════════════════ */
+function rSPay(p){
+  const sid=currentSid;
+  p.innerHTML=`
+  <div class="sh"><div class="sh-title">Ödəniş</div></div>
+  <div class="pay-card">
+    <div class="pay-card-title">Ödəniş aparılacaq kart</div>
+    <div class="pay-card-num">${TEACHER.card}</div>
+    <div class="pay-card-name">${TEACHER.cardHolder}</div>
+    <div style="margin-top:12px;font-size:12px;color:var(--text2)">Aylıq haqq: <strong style="color:var(--text)">${TEACHER.monthlyFee} ₼</strong></div>
+  </div>
+  <div class="sh" style="margin-top:4px"><div class="sh-title">Ödəniş Vəziyyəti</div></div>
+  ${[1,2,3,4].map(m=>{
+    const st=payments[sid]?.[m];
+    const isPaid=st==='paid';
+    return `<div class="pay-status-row">
+      <div>
+        <div class="pay-status-name">${MONTHS[m]} ${NOW_Y}</div>
+        <div class="pay-status-meta">${TEACHER.monthlyFee} ₼</div>
+      </div>
+      <div class="pay-action">
+        <span class="${isPaid?'pay-paid':'pay-overdue'}">${isPaid?'✓ Ödənildi':'⏳ Ödənilməyib'}</span>
+        ${!isPaid?`<button class="pay-btn" onclick="openStuPay(${sid},${m})">Ödə</button>`:''}
+      </div>
     </div>`;
-  }).join('');
-  openM('mGrade');
+  }).join('')}`;
+}
+function openStuPay(sid,m){
+  payingSid=sid;payingMonth=m;
+  document.getElementById('spTitle').textContent=`${MONTHS[m]} — Ödəniş`;
+  document.getElementById('spBody').innerHTML=`
+    <div style="background:var(--bg3);border-radius:10px;padding:16px;margin-bottom:14px;text-align:center">
+      <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Karta köçür</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;letter-spacing:.1em;color:var(--text);margin-bottom:4px">${TEACHER.card}</div>
+      <div style="font-size:12px;color:var(--text2)">${TEACHER.cardHolder}</div>
+      <div style="margin-top:14px;font-size:28px;font-weight:800;font-family:'Playfair Display',serif;color:var(--green)">${TEACHER.monthlyFee} ₼</div>
+    </div>
+    <div style="font-size:12px;color:var(--text2);text-align:center">Köçürüş etdikdən sonra <strong style="color:var(--text)">"Ödənildi"</strong> düyməsini basın.</div>`;
+  openM('mStuPay');
+}
+function markPaid(){
+  if(payingSid&&payingMonth){payments[payingSid][payingMonth]='paid';}
+  closeM('mStuPay');
+  showToast('✓ Ödəniş qeyd edildi','g');
+  go('s-pay');
 }
 
-function saveGrades(){
-  const t=tasks.find(x=>x.id===gradingTaskId);
-  if(!t) return;
-  const m=t.month;
-  if(!grades[m]) grades[m]={};
-  if(!grades[m][gradingTaskId]) grades[m][gradingTaskId]={};
-  STUDENTS.forEach(s=>{
-    const inp=document.getElementById('gr_'+s.id);
-    if(inp&&inp.value!=='') grades[m][gradingTaskId][s.id]=parseFloat(inp.value);
-  });
-  closeM('mGrade');
-  showToast('✓ Qiymətlər saxlanıldı','green');
-  if(activePanel==='grades') renderPanel('grades');
-  if(activePanel==='tasks')  renderPanel('tasks');
-}
-
-/* ════════════════════════════════════════
-   MODAL — ATTENDANCE
-════════════════════════════════════════ */
-function openAttModal(tid){
-  attTaskId=tid;
-  const t=tasks.find(x=>x.id===tid);
-  document.getElementById('mAttTitle').textContent=`Dərs ${t.lesson} — Davamiyyət`;
-  const body=document.getElementById('mAttBody');
-  if(!attendance[tid]) attendance[tid]={};
-  body.innerHTML=STUDENTS.map(s=>{
-    const st=attendance[tid][s.id]||'unset';
-    return `<div class="grade-row" id="arow_${s.id}">
-      <div class="gname">${s.name}</div>
-      <button class="att-btn present" onclick="toggleAtt(${tid},${s.id},'present')" id="abtn_p_${s.id}" style="${st==='present'?'opacity:1':'opacity:.35'}">✓</button>
-      <button class="att-btn absent" onclick="toggleAtt(${tid},${s.id},'absent')" id="abtn_a_${s.id}" style="${st==='absent'?'opacity:1':'opacity:.35'}">✗</button>
-    </div>`;
-  }).join('');
-  openM('mAtt');
-}
-
-function toggleAtt(tid,sid,val){
-  if(!attendance[tid]) attendance[tid]={};
-  attendance[tid][sid]=val;
-  const p=document.getElementById('abtn_p_'+sid);
-  const a=document.getElementById('abtn_a_'+sid);
-  if(p&&a){p.style.opacity=val==='present'?'1':'.35';a.style.opacity=val==='absent'?'1':'.35';}
-}
-
-function saveAtt(){
-  closeM('mAtt');
-  showToast('✓ Davamiyyət saxlanıldı','green');
-  if(activePanel==='att') renderPanel('att');
-}
-
-/* ════════════════════════════════════════
-   MODAL — TASK
-════════════════════════════════════════ */
+/* ═══════════════════════════════════════
+   MODAL ACTIONS
+═══════════════════════════════════════ */
 function addTask(){
   const lesson=document.getElementById('tLesson').value;
   const topic=document.getElementById('tTopic').value.trim();
   const hw=document.getElementById('tHW').value.trim();
   const note=document.getElementById('tNote').value.trim();
-  const date=document.getElementById('tDate').value||new Date().toISOString().slice(0,10);
-  if(!topic){showToast('Mövzunu daxil edin','');return;}
-  const d=new Date(date);
-  const month=d.getMonth();
+  const date=document.getElementById('tDate').value||todayISO();
+  if(!topic){showToast('Mövzunu daxil edin','r');return;}
+  const m=new Date(date).getMonth();
   const id=taskSeq++;
-  tasks.push({id,lesson:parseInt(lesson)||id,topic,hw,note,date,month});
+  tasks.push({id,lesson:parseInt(lesson)||id,topic,hw,note,date,month:m});
   attendance[id]={};
-  if(!grades[month]) grades[month]={};
-  grades[month][id]={};
+  if(!grades[m]) grades[m]={};
+  grades[m][id]={};
   closeM('mTask');
-  showToast('✓ Tapşırıq göndərildi','green');
-  ['tLesson','tTopic','tHW','tNote','tDate'].forEach(x=>document.getElementById(x).value='');
-  if(activePanel==='tasks') renderPanel('tasks');
-  if(activePanel==='dash')  renderPanel('dash');
+  showToast('✓ Tapşırıq göndərildi','g');
+  ['tLesson','tTopic','tHW','tNote'].forEach(x=>document.getElementById(x).value='');
+  document.getElementById('tDate').value=todayISO();
+  go(activeTab);
 }
-
-/* ════════════════════════════════════════
-   MODAL — NOTICE
-════════════════════════════════════════ */
 function addNotice(){
-  const title=document.getElementById('nTitle').value.trim();
-  const body=document.getElementById('nBody').value.trim();
-  if(!title||!body){showToast('Başlıq və mətni doldurun','');return;}
-  notices.push({id:noticeSeq++,title,body,date:todayStr(),month:NOW_MONTH});
-  closeM('mNotice');
-  showToast('✓ Elan yayımlandı','green');
-  document.getElementById('nTitle').value='';
-  document.getElementById('nBody').value='';
-  if(activePanel==='notices') renderPanel('notices');
-  if(activePanel==='dash') renderPanel('dash');
+  const t=document.getElementById('nTitle').value.trim();
+  const b=document.getElementById('nBody').value.trim();
+  if(!t||!b){showToast('Başlıq və mətn daxil edin','r');return;}
+  notices.push({id:noticeSeq++,title:t,body:b,date:today()});
+  closeM('mNotice');showToast('✓ Elan yayımlandı','g');
+  document.getElementById('nTitle').value='';document.getElementById('nBody').value='';
+  go(activeTab);
 }
-
-/* ════════════════════════════════════════
-   MODAL — ADD STUDENT
-════════════════════════════════════════ */
 function addStudent(){
   const name=document.getElementById('asName').value.trim();
   const user=document.getElementById('asUser').value.trim();
   const parent=document.getElementById('asParent').value.trim();
   const phone=document.getElementById('asPhone').value.trim();
-  if(!name||!user){showToast('Ad və istifadəçi adını daxil edin','');return;}
-  const id=STUDENTS.length+1;
+  if(!name||!user){showToast('Ad və istifadəçi adı lazımdır','r');return;}
+  const id=STUDENTS.reduce((m,s)=>Math.max(m,s.id),0)+1;
   STUDENTS.push({id,name,user,parent:parent||'Valideyn',phone:phone||'+994'});
-  closeM('mAddStu');
-  showToast('✓ Şagird əlavə edildi','green');
+  payments[id]={};[1,2,3,4].forEach(m=>{payments[id][m]='unpaid';});
+  closeM('mAddStu');showToast('✓ Şagird əlavə edildi','g');
   ['asName','asUser','asParent','asPhone'].forEach(x=>document.getElementById(x).value='');
-  if(activePanel==='stus') renderPanel('stus');
+  go(activeTab);
 }
-
-/* ════════════════════════════════════════
-   MODAL — PARENT MSG
-════════════════════════════════════════ */
+function openGrade(tid){
+  gradingTid=tid;
+  const t=tasks.find(x=>x.id===tid);
+  document.getElementById('mGradeTitle').textContent=`Dərs ${t.lesson} — Qiymət`;
+  document.getElementById('mGradeBody').innerHTML=STUDENTS.map(s=>{
+    const g=(grades[t.month]?.[tid]||{})[s.id]??'';
+    const abs=attendance[tid]?.[s.id]==='absent';
+    return `<div class="grade-row">
+      <div class="gn">${s.name}</div>
+      ${abs?'<span class="ga">❌Qayib</span>':''}
+      <input type="number" id="gr_${s.id}" min="0" max="10" step="0.5" value="${g}" placeholder="—"/>
+      <span style="font-size:11px;color:var(--text2)">/10</span>
+    </div>`;
+  }).join('');
+  openM('mGrade');
+}
+function saveGrades(){
+  const t=tasks.find(x=>x.id===gradingTid);
+  if(!t) return;
+  const m=t.month;
+  if(!grades[m])grades[m]={};
+  if(!grades[m][gradingTid])grades[m][gradingTid]={};
+  STUDENTS.forEach(s=>{
+    const inp=document.getElementById('gr_'+s.id);
+    if(inp&&inp.value!=='') grades[m][gradingTid][s.id]=parseFloat(inp.value);
+  });
+  closeM('mGrade');showToast('✓ Qiymətlər saxlanıldı','g');
+  if(['t-tasks','t-grades','t-dash'].includes(activeTab)) go(activeTab);
+}
+function openAtt(tid){
+  attTid=tid;
+  const t=tasks.find(x=>x.id===tid);
+  document.getElementById('mAttTitle').textContent=`Dərs ${t.lesson} — Davamiyyət`;
+  if(!attendance[tid]) attendance[tid]={};
+  document.getElementById('mAttBody').innerHTML=STUDENTS.map(s=>{
+    const st=attendance[tid][s.id]||'unset';
+    return `<div class="grade-row" style="gap:8px">
+      <div class="gn">${s.name}</div>
+      <button class="att-btn present${st!=='present'?' dim':''}" onclick="setAtt(${tid},${s.id},'present',this)">✓</button>
+      <button class="att-btn late${st!=='late'?' dim':''}" onclick="setAtt(${tid},${s.id},'late',this)">~</button>
+      <button class="att-btn absent${st!=='absent'?' dim':''}" onclick="setAtt(${tid},${s.id},'absent',this)">✗</button>
+    </div>`;
+  }).join('');
+  openM('mAtt');
+}
+function setAtt(tid,sid,val){
+  if(!attendance[tid]) attendance[tid]={};
+  attendance[tid][sid]=val;
+  const row=document.querySelector(`#mAttBody .grade-row:nth-child(${STUDENTS.findIndex(s=>s.id===sid)+1})`);
+  if(row){
+    row.querySelectorAll('.att-btn').forEach(b=>{
+      const isMatch=(val==='present'&&b.classList.contains('present'))||(val==='late'&&b.classList.contains('late'))||(val==='absent'&&b.classList.contains('absent'));
+      b.classList.toggle('dim',!isMatch);
+    });
+  }
+}
+function saveAtt(){closeM('mAtt');showToast('✓ Davamiyyət saxlanıldı','g');if(activeTab==='t-att')go('t-att');}
 function openParentMsg(sid){
-  parentMsgSid=sid;
+  parentSid=sid;
   const s=STUDENTS.find(x=>x.id===sid);
   document.getElementById('mParentTitle').textContent=`${s.name} — Valideynə Mesaj`;
   document.getElementById('mParentInfo').innerHTML=`👤 <strong>${s.parent}</strong><br>📞 ${s.phone}`;
   document.getElementById('parentMsg').value='';
   openM('mParent');
 }
-
 function sendParentMsg(){
   const msg=document.getElementById('parentMsg').value.trim();
-  if(!msg){showToast('Mesajı daxil edin','');return;}
-  const s=STUDENTS.find(x=>x.id===parentMsgSid);
-  closeM('mParent');
-  showToast(`✓ ${s.parent}-ə mesaj göndərildi`,'green');
+  if(!msg){showToast('Mesajı daxil edin','r');return;}
+  const s=STUDENTS.find(x=>x.id===parentSid);
+  closeM('mParent');showToast(`✓ ${s.parent}-ə mesaj göndərildi`,'g');
 }
-
-/* ════════════════════════════════════════
-   MODAL — STUDENT DETAIL
-════════════════════════════════════════ */
 function openStuDetail(sid){
   const s=STUDENTS.find(x=>x.id===sid);
-  document.getElementById('sdName').textContent=s.name;
-  const avg=overallAvg(sid);
-  const abs=stuAbsent(sid);
-  const attPct=stuAttPct(sid);
-  const ranked=rankStudents(NOW_MONTH);
+  document.getElementById('sdTitle').textContent=s.name;
+  const avg=stuAvgAll(sid),abs=stuAbs(sid),pct=stuAttPct(sid);
+  const ranked=rankByMonth(NOW_M);
   const rank=ranked.findIndex(x=>x.id===sid)+1;
-
-  const recentGrades=tasks.slice(-5).map(t=>{
-    const g=grades[t.month]?.[t.id]?.[sid];
-    return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border2);font-size:12px">
-      <span>D${t.lesson} — ${t.topic.split(' ')[0]}</span>
-      <span class="badge ${g!==undefined?scoreColor(g):'o'}">${g!==undefined?g+'/10':'—'}</span>
-    </div>`;
-  }).join('');
-
+  const payThis=payments[sid]?.[NOW_M]==='paid';
   document.getElementById('sdBody').innerHTML=`
-  <div class="ms-grid" style="margin-bottom:14px">
-    <div class="ms-card blue"><div class="ms-label">Orta bal</div><div class="ms-val">${avg??'—'}</div></div>
-    <div class="ms-card green"><div class="ms-label">Reytinq</div><div class="ms-val">${rank}.</div></div>
-    <div class="ms-card red"><div class="ms-label">Qayib</div><div class="ms-val">${abs}</div></div>
-    <div class="ms-card purple"><div class="ms-label">İştirak</div><div class="ms-val">${attPct}%</div></div>
+  <div class="stat-grid">
+    <div class="stat-card g"><div class="stat-label">Orta bal</div><div class="stat-val">${avg||'—'}</div></div>
+    <div class="stat-card s"><div class="stat-label">Reytinq</div><div class="stat-val">${rank}.</div></div>
+    <div class="stat-card r"><div class="stat-label">Qayib</div><div class="stat-val">${abs}</div></div>
+    <div class="stat-card ${payThis?'g':'o'}"><div class="stat-label">Bu ay ödəniş</div><div class="stat-val" style="font-size:16px">${payThis?'Ödənildi':'Gözlənir'}</div></div>
   </div>
-  <div style="font-size:12px;color:var(--text2);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Son qiymətlər</div>
-  ${recentGrades}
-  <div style="font-size:12px;color:var(--text2);margin:12px 0 4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Valideyn</div>
-  <div class="parent-row" style="margin:0">
-    <div><div class="parent-name">${s.parent}</div><div class="parent-num">📞 ${s.phone}</div></div>
-    <button class="msg-btn" onclick="closeM('mStuDetail');openParentMsg(${sid})">Mesaj</button>
+  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:8px">Son qiymətlər</div>
+  ${tasks.slice(-4).map(t=>{const g=grades[t.month]?.[t.id]?.[sid];return `<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="color:var(--text2)">D${t.lesson} — ${t.topic.split(' ')[0]}</span><span class="chip ${g!=null?scoreC(g):'o'}">${g!=null?g+'/10':'—'}</span></div>`}).join('')}
+  <div style="display:flex;gap:8px;margin-top:14px">
+    <button class="btn-acc-sm" style="flex:1" onclick="closeM('mStuDet');openParentMsg(${sid})">📱 Valideynə Mesaj</button>
   </div>`;
-  openM('mStuDetail');
+  openM('mStuDet');
 }
 
-/* ════════════════════════════════════════
-   MONTH END — AUTO WINNER NOTICE
-════════════════════════════════════════ */
-(function checkMonthWinner(){
-  const prevMonth=NOW_MONTH-1;
-  const exists=notices.some(n=>n.winner&&n.month===prevMonth);
-  if(!exists){
-    const ranked=rankStudents(prevMonth);
-    const top=ranked.slice(0,3).filter(s=>stuAvg(s.id,prevMonth)!==null);
-    if(top.length){
-      const body=top.map((s,i)=>`${i+1}. ${s.name} — ${stuAvg(s.id,prevMonth)}/10`).join('\n');
-      notices.unshift({
-        id:noticeSeq++,
-        title:`🏆 ${MONTHS[prevMonth]} Ayının Qalibləri!`,
-        body:body.split('\n').join('<br>'),
-        date:'1 '+MONTHS[NOW_MONTH].toLowerCase().slice(0,3),
-        month:prevMonth,
-        winner:true,
-      });
-    }
+/* ═══════════════════════════════════════
+   AUTO MONTH WINNER NOTICE
+═══════════════════════════════════════ */
+(function(){
+  const prev=NOW_M-1;
+  if(notices.some(n=>n.winner)) return;
+  const ranked=rankByMonth(prev);
+  const top=ranked.slice(0,3).filter(s=>stuAvgMonth(s.id,prev));
+  if(top.length){
+    notices.unshift({
+      id:noticeSeq++,
+      title:`🏆 ${MONTHS[prev]} Ayının Qalibləri!`,
+      body:top.map((s,i)=>`${i===0?'🥇':i===1?'🥈':'🥉'} ${s.name} — ${stuAvgMonth(s.id,prev)}/10`).join('<br>'),
+      date:'1 '+MONTHS3[NOW_M],
+      winner:true,
+    });
   }
 })();
 
-/* ════════════════════════════════════════
+/* ═══════════════════════════════════════
    UTILS
-════════════════════════════════════════ */
-function openM(id){document.getElementById(id).classList.add('open')}
-function closeM(id){document.getElementById(id).classList.remove('open')}
-document.querySelectorAll('.modal-ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
-
-let toastTmr;
-function showToast(msg,type){
+═══════════════════════════════════════ */
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+let toastT;
+function showToast(msg,type=''){
   const t=document.getElementById('toast');
-  t.textContent=msg;t.className='toast'+(type?' '+type:'');
-  t.classList.add('show');
-  clearTimeout(toastTmr);
-  toastTmr=setTimeout(()=>t.classList.remove('show'),2800);
+  t.textContent=msg;t.className='toast'+(type?' '+type:'');t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2800);
 }
-
-// Set today's date in task form
-document.getElementById('tDate').value=new Date().toISOString().slice(0,10);
+document.getElementById('tDate').value=todayISO();
 </script>
 </body>
 </html>
