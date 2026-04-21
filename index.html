@@ -1,1 +1,1513 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyVoyage — Dünyaya Uçuş</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;600;700;900&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0f1a;
+            --bg2: #111827;
+            --card: #151d2e;
+            --card2: #1a2438;
+            --border: #1e2d45;
+            --fg: #e8edf5;
+            --muted: #7a8ba7;
+            --accent: #f59e0b;
+            --accent2: #d97706;
+            --teal: #0d9488;
+            --teal2: #0f766e;
+            --red: #ef4444;
+            --green: #22c55e;
+        }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--teal); }
+
+        /* Hero bg animasiya */
+        .hero-bg {
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% 80%, rgba(13,148,136,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 20%, rgba(245,158,11,0.1) 0%, transparent 50%),
+                radial-gradient(ellipse 100% 60% at 50% 0%, rgba(13,148,136,0.08) 0%, transparent 40%);
+            z-index: 0;
+        }
+
+        /* Uçan təyyarə animasiyası */
+        .flying-plane {
+            position: absolute;
+            font-size: 1.5rem;
+            color: var(--accent);
+            opacity: 0.3;
+            animation: flyAcross 18s linear infinite;
+        }
+        .flying-plane:nth-child(2) { animation-delay: -6s; top: 30%; font-size: 1rem; opacity: 0.2; }
+        .flying-plane:nth-child(3) { animation-delay: -12s; top: 60%; font-size: 1.2rem; opacity: 0.15; }
+
+        @keyframes flyAcross {
+            0% { left: -5%; transform: translateY(0) rotate(-5deg); }
+            25% { transform: translateY(-15px) rotate(-2deg); }
+            50% { transform: translateY(5px) rotate(-8deg); }
+            75% { transform: translateY(-10px) rotate(-3deg); }
+            100% { left: 105%; transform: translateY(0) rotate(-5deg); }
+        }
+
+        /* Ulduz animasiyası */
+        .star {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.1; transform: scale(1); }
+            100% { opacity: 0.8; transform: scale(1.5); }
+        }
+
+        /* Kart hover */
+        .dest-card {
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+        }
+        .dest-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(13,148,136,0.15);
+        }
+        .dest-card:hover .card-img {
+            transform: scale(1.1);
+        }
+        .card-img {
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Axtarış formu */
+        .search-input {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            color: var(--fg);
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(13,148,136,0.2);
+        }
+
+        /* Düymə */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--teal), var(--teal2));
+            color: #fff;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .btn-primary:hover::before { opacity: 1; }
+        .btn-primary span { position: relative; z-index: 1; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(13,148,136,0.4); }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #000;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245,158,11,0.4); }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            max-width: 600px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Toast */
+        .toast-container {
+            position: fixed; top: 20px; right: 20px;
+            z-index: 2000;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .toast {
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            animation: toastIn 0.4s ease, toastOut 0.4s ease 3s forwards;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+        .toast-success { background: var(--green); color: #000; }
+        .toast-error { background: var(--red); color: #fff; }
+        .toast-info { background: var(--teal); color: #fff; }
+
+        @keyframes toastIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-20px); } }
+
+        /* Nəticə kartı */
+        .flight-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .flight-card:hover {
+            border-color: var(--teal);
+            box-shadow: 0 0 20px rgba(13,148,136,0.1);
+        }
+
+        /* Aviaşirkət loqosu */
+        .airline-logo {
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 0.7rem;
+            color: #fff;
+        }
+
+        /* Dropzone */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0; right: 0;
+            background: var(--card2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-top: 4px;
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+        }
+        .dropdown-menu.active { display: block; }
+        .dropdown-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.9rem;
+        }
+        .dropdown-item:hover { background: rgba(13,148,136,0.15); }
+
+        /* Sərnişin counter */
+        .counter-btn {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card2);
+            color: var(--fg);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .counter-btn:hover { border-color: var(--teal); background: rgba(13,148,136,0.2); }
+        .counter-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* Reytinq ulduzları */
+        .stars { color: var(--accent); }
+
+        /* Pulse */
+        .pulse-dot {
+            width: 8px; height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s ease infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+            50% { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+        }
+
+        /* Marşrut xətti */
+        .route-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--teal), var(--accent));
+            position: relative;
+            margin: 0 12px;
+        }
+        .route-line::after {
+            content: '\f072';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--accent);
+            font-size: 0.8rem;
+            background: var(--card);
+            padding: 0 6px;
+        }
+
+        /* Seksiya animasiya */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .section-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Tab */
+        .tab-btn {
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .tab-btn.active {
+            background: rgba(13,148,136,0.15);
+            border-color: var(--teal);
+            color: var(--teal);
+        }
+        .tab-btn:not(.active) { color: var(--muted); }
+        .tab-btn:not(.active):hover { color: var(--fg); background: rgba(255,255,255,0.03); }
+
+        /* Passazir məlumatı formu */
+        .passenger-form input {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--fg);
+            border-radius: 8px;
+            padding: 10px 14px;
+            width: 100%;
+            font-family: 'Outfit', sans-serif;
+            transition: border-color 0.3s;
+        }
+        .passenger-form input:focus {
+            outline: none;
+            border-color: var(--teal);
+        }
+
+        /* Bayraq emoji */
+        .flag { font-size: 1.5rem; line-height: 1; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .search-grid { grid-template-columns: 1fr !important; }
+            .dest-grid { grid-template-columns: 1fr !important; }
+            .deals-grid { grid-template-columns: 1fr !important; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- HEADER -->
+<header style="background: rgba(10,15,26,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 500;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 70px;">
+        <!-- Logo -->
+        <div style="display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="scrollToTop()">
+            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--teal), var(--accent)); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-plane" style="color: #fff; font-size: 1.1rem; transform: rotate(-45deg);"></i>
+            </div>
+            <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.3rem; letter-spacing: -0.5px;">
+                Sky<span style="color: var(--accent);">Voyage</span>
+            </span>
+        </div>
+
+        <!-- Nav -->
+        <nav style="display: flex; gap: 28px; align-items: center;" class="hidden md:flex">
+            <a href="#destinations" style="color: var(--muted); text-decoration: none; font-weight: 500; transition: color 0.3s; font-size: 0.95rem;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">İstiqamətlər</a>
+            <a href="#deals" style="color: var(--muted); text-decoration: none; font-weight: 500; transition: color 0.3s; font-size: 0.95rem;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">Xüsusi Təkliflər</a>
+            <a href="#about" style="color: var(--muted); text-decoration: none; font-weight: 500; transition: color 0.3s; font-size: 0.95rem;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">Haqqımızda</a>
+        </nav>
+
+        <!-- Sağ tərəf -->
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <button onclick="openMyTickets()" style="background: none; border: 1px solid var(--border); color: var(--fg); padding: 8px 16px; border-radius: 10px; cursor: pointer; font-family: 'Outfit'; font-weight: 500; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--border)'">
+                <i class="fas fa-ticket" style="color: var(--accent);"></i>
+                Biletlərim <span id="ticketCount" style="background: var(--accent); color: #000; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">0</span>
+            </button>
+            <div style="width: 38px; height: 38px; background: linear-gradient(135deg, var(--teal), var(--accent)); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 700; font-size: 0.85rem; color: #fff;">
+                SV
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- HERO -->
+<section style="position: relative; min-height: 580px; display: flex; align-items: center; overflow: hidden;">
+    <div class="hero-bg"></div>
+    <!-- Ulduzlar -->
+    <div id="starsContainer" style="position: absolute; inset: 0; z-index: 0;"></div>
+    <!-- Uçan təyyarələr -->
+    <div class="flying-plane" style="top: 20%;"><i class="fas fa-plane"></i></div>
+    <div class="flying-plane"><i class="fas fa-plane"></i></div>
+    <div class="flying-plane"><i class="fas fa-plane"></i></div>
+
+    <div style="max-width: 1280px; margin: 0 auto; padding: 60px 24px 40px; position: relative; z-index: 1; width: 100%;">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(13,148,136,0.1); border: 1px solid rgba(13,148,136,0.2); border-radius: 30px; padding: 6px 18px; margin-bottom: 20px; font-size: 0.85rem; color: var(--teal);">
+                <div class="pulse-dot"></div>
+                500+ istiqamət, real vaxt biletləri
+            </div>
+            <h1 style="font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 900; line-height: 1.1; margin-bottom: 16px; letter-spacing: -1px;">
+                Dunyani <span style="background: linear-gradient(135deg, var(--teal), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">kesf et</span>,<br>
+                ucur hazirdir
+            </h1>
+            <p style="color: var(--muted); font-size: 1.1rem; max-width: 520px; margin: 0 auto; font-weight: 300;">
+                Ən yaxşı qiymətlərlə dünya üzrə uçuş biletləri. Bir neçə saniyədə sifariş edin.
+            </p>
+        </div>
+
+        <!-- Axtarış Formu -->
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; max-width: 960px; margin: 0 auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <!-- Trip tipi -->
+            <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                <button class="tab-btn active" data-trip="oneway" onclick="setTripType(this)">Bir istiqamətli</button>
+                <button class="tab-btn" data-trip="roundtrip" onclick="setTripType(this)">İstiqamətli</button>
+                <button class="tab-btn" data-trip="multicity" onclick="setTripType(this)">Çox istiqamətli</button>
+            </div>
+
+            <div class="search-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr auto auto; gap: 12px; align-items: end;">
+                <!-- Haradan -->
+                <div style="position: relative;">
+                    <label style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: block;">Haradan</label>
+                    <div style="position: relative;">
+                        <i class="fas fa-plane-departure" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--teal); font-size: 0.85rem;"></i>
+                        <input type="text" id="fromInput" class="search-input" placeholder="Şəhər və ya havalimanı" style="width: 100%; padding: 12px 12px 12px 38px; border-radius: 10px; font-family: 'Outfit'; font-size: 0.95rem;" autocomplete="off" onfocus="showDropdown('from')" oninput="filterCities('from')">
+                        <div class="dropdown-menu" id="fromDropdown"></div>
+                    </div>
+                    <input type="hidden" id="fromCode" value="GYD">
+                    <span id="fromLabel" style="font-size: 0.8rem; color: var(--teal); margin-top: 4px; display: block;">🇦🇿 Bakı, GYD</span>
+                </div>
+
+                <!-- Haraya -->
+                <div style="position: relative;">
+                    <label style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: block;">Haraya</label>
+                    <div style="position: relative;">
+                        <i class="fas fa-plane-arrival" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--accent); font-size: 0.85rem;"></i>
+                        <input type="text" id="toInput" class="search-input" placeholder="Şəhər və ya havalimanı" style="width: 100%; padding: 12px 12px 12px 38px; border-radius: 10px; font-family: 'Outfit'; font-size: 0.95rem;" autocomplete="off" onfocus="showDropdown('to')" oninput="filterCities('to')">
+                        <div class="dropdown-menu" id="toDropdown"></div>
+                    </div>
+                    <input type="hidden" id="toCode" value="">
+                    <span id="toLabel" style="font-size: 0.8rem; color: var(--muted); margin-top: 4px; display: block;">Seçilməyib</span>
+                </div>
+
+                <!-- Tarix -->
+                <div>
+                    <label style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: block;">Tarix</label>
+                    <div style="position: relative;">
+                        <i class="fas fa-calendar" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem;"></i>
+                        <input type="date" id="dateInput" class="search-input" style="width: 100%; padding: 12px 12px 12px 38px; border-radius: 10px; font-family: 'Outfit'; font-size: 0.95rem; color-scheme: dark;">
+                    </div>
+                </div>
+
+                <!-- Sərnişin -->
+                <div style="position: relative;">
+                    <label style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: block;">Sərnişin</label>
+                    <button onclick="togglePassengerPanel()" class="search-input" style="width: 100%; padding: 12px 14px; border-radius: 10px; font-family: 'Outfit'; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 6px; text-align: left;">
+                        <i class="fas fa-user" style="color: var(--muted); font-size: 0.8rem;"></i>
+                        <span id="passengerLabel">1 sərnişin</span>
+                    </button>
+                    <div id="passengerPanel" style="display: none; position: absolute; top: 100%; right: 0; background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 4px; min-width: 220px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.4);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.9rem;">Yetkin</div>
+                                <div style="font-size: 0.75rem; color: var(--muted);">12+ yaş</div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <button class="counter-btn" onclick="changePassenger('adult', -1)" id="adultMinus">-</button>
+                                <span id="adultCount" style="font-weight: 700; min-width: 20px; text-align: center;">1</span>
+                                <button class="counter-btn" onclick="changePassenger('adult', 1)">+</button>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.9rem;">Uşaq</div>
+                                <div style="font-size: 0.75rem; color: var(--muted);">2-11 yaş</div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <button class="counter-btn" onclick="changePassenger('child', -1)" id="childMinus" disabled>-</button>
+                                <span id="childCount" style="font-weight: 700; min-width: 20px; text-align: center;">0</span>
+                                <button class="counter-btn" onclick="changePassenger('child', 1)">+</button>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.9rem;">Sagird</div>
+                                <div style="font-size: 0.75rem; color: var(--muted);">0-2 yaş</div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <button class="counter-btn" onclick="changePassenger('infant', -1)" id="infantMinus" disabled>-</button>
+                                <span id="infantCount" style="font-weight: 700; min-width: 20px; text-align: center;">0</span>
+                                <button class="counter-btn" onclick="changePassenger('infant', 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Axtarış düyməsi -->
+                <button class="btn-primary" onclick="searchFlights()" style="padding: 12px 28px; border-radius: 10px; border: none; cursor: pointer; font-family: 'Outfit'; font-size: 0.95rem; white-space: nowrap; height: 46px;">
+                    <span><i class="fas fa-search" style="margin-right: 6px;"></i> Axtar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Axtarış Nəticələri -->
+<section id="resultsSection" style="display: none; max-width: 1280px; margin: 0 auto; padding: 20px 24px 60px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <h2 style="font-size: 1.5rem; font-weight: 700;" id="resultsTitle">Uçuşlar</h2>
+            <p style="color: var(--muted); font-size: 0.9rem;" id="resultsSubtitle"></p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button onclick="sortFlights('price')" class="tab-btn" id="sortPrice" style="font-size: 0.8rem; padding: 6px 14px;">Qiymət</button>
+            <button onclick="sortFlights('duration')" class="tab-btn" id="sortDuration" style="font-size: 0.8rem; padding: 6px 14px;">Müddət</button>
+            <button onclick="sortFlights('departure')" class="tab-btn" id="sortDeparture" style="font-size: 0.8rem; padding: 6px 14px;">Çıxış</button>
+        </div>
+    </div>
+    <div id="resultsContainer" style="display: flex; flex-direction: column; gap: 12px;"></div>
+</section>
+
+<!-- Populyar İstiqamətlər -->
+<section id="destinations" class="section-reveal" style="max-width: 1280px; margin: 0 auto; padding: 60px 24px;">
+    <div style="text-align: center; margin-bottom: 40px;">
+        <span style="color: var(--teal); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px;">Populyar</span>
+        <h2 style="font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 900; margin-top: 8px; letter-spacing: -0.5px;">En cox secilen istiqametler</h2>
+        <p style="color: var(--muted); margin-top: 8px; font-size: 1rem; max-width: 500px; margin-left: auto; margin-right: auto;">Dünyanın ən gözəl şəhərlərinə sərfəli qiymətlərlə uçuş</p>
+    </div>
+    <div class="dest-grid" id="destGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;"></div>
+</section>
+
+<!-- Xüsusi Təkliflər -->
+<section id="deals" class="section-reveal" style="max-width: 1280px; margin: 0 auto; padding: 40px 24px 60px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <span style="color: var(--accent); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px;">Limitsiz</span>
+            <h2 style="font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 900; margin-top: 6px; letter-spacing: -0.5px;">Xusi teklifler</h2>
+        </div>
+        <div style="display: flex; gap: 6px;" id="dealFilters">
+            <button class="tab-btn active" onclick="filterDeals('all', this)" style="font-size: 0.8rem; padding: 6px 14px;">Hamısı</button>
+            <button class="tab-btn" onclick="filterDeals('europe', this)" style="font-size: 0.8rem; padding: 6px 14px;">Avropa</button>
+            <button class="tab-btn" onclick="filterDeals('asia', this)" style="font-size: 0.8rem; padding: 6px 14px;">Asiya</button>
+            <button class="tab-btn" onclick="filterDeals('america', this)" style="font-size: 0.8rem; padding: 6px 14px;">Amerika</button>
+        </div>
+    </div>
+    <div class="deals-grid" id="dealsGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;"></div>
+</section>
+
+<!-- Statistika -->
+<section class="section-reveal" style="max-width: 1280px; margin: 0 auto; padding: 20px 24px 60px;">
+    <div style="background: linear-gradient(135deg, var(--card), var(--card2)); border: 1px solid var(--border); border-radius: 20px; padding: 48px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; text-align: center;">
+        <div>
+            <div style="font-size: 2.5rem; font-weight: 900; color: var(--teal);" id="statFlights">0</div>
+            <div style="color: var(--muted); font-size: 0.9rem; margin-top: 4px;">Gundelik ucus</div>
+        </div>
+        <div>
+            <div style="font-size: 2.5rem; font-weight: 900; color: var(--accent);" id="statDest">0</div>
+            <div style="color: var(--muted); font-size: 0.9rem; margin-top: 4px;">Istiqamet</div>
+        </div>
+        <div>
+            <div style="font-size: 2.5rem; font-weight: 900; color: var(--green);" id="statAirlines">0</div>
+            <div style="color: var(--muted); font-size: 0.9rem; margin-top: 4px;">Aviasirket</div>
+        </div>
+        <div>
+            <div style="font-size: 2.5rem; font-weight: 900; color: var(--red);" id="statHappy">0</div>
+            <div style="color: var(--muted); font-size: 0.9rem; margin-top: 4px;">Mutlu sərnişin</div>
+        </div>
+    </div>
+</section>
+
+<!-- Haqqımızda -->
+<section id="about" class="section-reveal" style="max-width: 1280px; margin: 0 auto; padding: 20px 24px 80px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;">
+        <div>
+            <span style="color: var(--teal); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px;">Niyə biz?</span>
+            <h2 style="font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 900; margin-top: 10px; margin-bottom: 20px; letter-spacing: -0.5px; line-height: 1.15;">
+                Səyahətinizi asanlasdiran<br><span style="color: var(--accent);">etibarli partnyor</span>
+            </h2>
+            <p style="color: var(--muted); font-size: 1rem; line-height: 1.7; margin-bottom: 24px;">
+                SkyVoyage 2018-ci ildən bəri sərnişinlərə ən sərfəli və rahat uçuş həllərini təqdim edir. 150-dən çox aviaşirkəti ilə əməkdaşlıq sayəsində sizə ən yaxşı qiymətləri təklif edirik.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div style="display: flex; align-items: start; gap: 14px;">
+                    <div style="width: 40px; height: 40px; background: rgba(13,148,136,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-shield-halved" style="color: var(--teal);"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.95rem;">100% etibarli</div>
+                        <div style="color: var(--muted); font-size: 0.85rem;">Bütün biletlər rəsmi aviaşirkətlərdən təmin edilir</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: start; gap: 14px;">
+                    <div style="width: 40px; height: 40px; background: rgba(245,158,11,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-bolt" style="color: var(--accent);"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.95rem;">Sürətli sifariş</div>
+                        <div style="color: var(--muted); font-size: 0.85rem;">30 saniyədə bilet sifarişi və dərhal təsdiq</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: start; gap: 14px;">
+                    <div style="width: 40px; height: 40px; background: rgba(34,197,94,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-headset" style="color: var(--green);"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.95rem;">24/7 dəstək</div>
+                        <div style="color: var(--muted); font-size: 0.85rem;">Hər hansı bir sualınızda dəstək xidməti</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="position: relative;">
+            <div style="border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.4);">
+                <img src="https://picsum.photos/seed/travelabout/600/500.jpg" alt="About SkyVoyage" style="width: 100%; display: block;">
+            </div>
+            <div style="position: absolute; bottom: -20px; left: -20px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);">
+                <div style="width: 44px; height: 44px; background: linear-gradient(135deg, var(--green), #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-check" style="color: #fff;"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 700; font-size: 1.1rem;">4.9/5.0</div>
+                    <div style="font-size: 0.75rem; color: var(--muted);">12,500+ reytinq</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background: var(--bg2); border-top: 1px solid var(--border); padding: 48px 24px 24px;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+                    <div style="width: 36px; height: 36px; background: linear-gradient(135deg, var(--teal), var(--accent)); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-plane" style="color: #fff; font-size: 0.9rem; transform: rotate(-45deg);"></i>
+                    </div>
+                    <span style="font-family: 'Space Grotesk'; font-weight: 700; font-size: 1.1rem;">Sky<span style="color: var(--accent);">Voyage</span></span>
+                </div>
+                <p style="color: var(--muted); font-size: 0.85rem; line-height: 1.6; max-width: 280px;">
+                    Dünya üzrə uçuş biletinin ən etibarlı platforması. 2018-ci ildən fəaliyyətdə.
+                </p>
+                <div style="display: flex; gap: 10px; margin-top: 16px;">
+                    <a href="#" style="width: 36px; height: 36px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted); text-decoration: none; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" style="width: 36px; height: 36px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted); text-decoration: none; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'"><i class="fab fa-instagram"></i></a>
+                    <a href="#" style="width: 36px; height: 36px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted); text-decoration: none; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'"><i class="fab fa-twitter"></i></a>
+                    <a href="#" style="width: 36px; height: 36px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted); text-decoration: none; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 style="font-weight: 700; margin-bottom: 16px; font-size: 0.95rem;">Istiqametler</h4>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="#" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">Istanbul</a>
+                    <a href="#" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">London</a>
+                    <a href="#" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">Dubai</a>
+                    <a href="#" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">Tokyo</a>
+                    <a href="#" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">New York</a>
+                </div>
+            </div>
+            <div>
+                <h4 style="font-weight: 700; margin-bottom: 16px; font-size: 0.95rem;">Kompaniya</h4>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="#" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">Haqqimizda</a>
+                    <a href="#" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">Karyera</a>
+                    <a href="#" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">Blog</a>
+                    <a href="#" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">Elaqe</a>
+                </div>
+            </div>
+            <div>
+                <h4 style="font-weight: 700; margin-bottom: 16px; font-size: 0.95rem;">Destek</h4>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="#" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">FAQ</a>
+                    <a href="#" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">Ləğv etmə qaydaları</a>
+                    <a href="#" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">Gizlilik siyasəti</a>
+                    <a href="#" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--muted)'">İstifadə şərtləri</a>
+                </div>
+            </div>
+        </div>
+        <div style="border-top: 1px solid var(--border); padding-top: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <span style="color: var(--muted); font-size: 0.8rem;">2024 SkyVoyage. Bütün hüquqlar qorunur.</span>
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <i class="fab fa-cc-visa" style="color: var(--muted); font-size: 1.5rem;"></i>
+                <i class="fab fa-cc-mastercard" style="color: var(--muted); font-size: 1.5rem;"></i>
+                <i class="fab fa-cc-paypal" style="color: var(--muted); font-size: 1.5rem;"></i>
+                <i class="fab fa-apple-pay" style="color: var(--muted); font-size: 1.5rem;"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Bilet Sifariş Modal -->
+<div class="modal-overlay" id="bookingModal">
+    <div class="modal-content" style="padding: 0;">
+        <div style="padding: 24px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+            <h3 style="font-weight: 700; font-size: 1.2rem;">Bilet Sifarişi</h3>
+            <button onclick="closeModal('bookingModal')" style="background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.2rem;"><i class="fas fa-xmark"></i></button>
+        </div>
+        <div id="bookingFlightInfo" style="padding: 20px 28px; background: rgba(13,148,136,0.05); border-bottom: 1px solid var(--border);"></div>
+        <div class="passenger-form" style="padding: 24px 28px;" id="passengerFormContainer"></div>
+        <div style="padding: 20px 28px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <div style="font-size: 0.8rem; color: var(--muted);">Cəmi</div>
+                <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent);" id="bookingTotal">0 AZN</div>
+            </div>
+            <button class="btn-accent" onclick="confirmBooking()" style="padding: 12px 32px; border-radius: 12px; border: none; cursor: pointer; font-family: 'Outfit'; font-size: 1rem;">
+                <i class="fas fa-check" style="margin-right: 6px;"></i> Tesdiq et
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Biletlərim Modal -->
+<div class="modal-overlay" id="ticketsModal">
+    <div class="modal-content" style="padding: 0;">
+        <div style="padding: 24px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+            <h3 style="font-weight: 700; font-size: 1.2rem;"><i class="fas fa-ticket" style="color: var(--accent); margin-right: 8px;"></i>Biletlərim</h3>
+            <button onclick="closeModal('ticketsModal')" style="background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.2rem;"><i class="fas fa-xmark"></i></button>
+        </div>
+        <div id="ticketsList" style="padding: 24px 28px; max-height: 60vh; overflow-y: auto;"></div>
+    </div>
+</div>
+
+<script>
+// ==================== MƏLUMAT BAZASI ====================
+
+// Şəhərlər - real havalimanı kodları, bayraqlar, koordinatlar
+const cities = [
+    { code: 'GYD', name: 'Bakı', country: 'Azərbaycan', flag: '🇦🇿', region: 'asia', rating: 4.7, seed: 'baku2024' },
+    { code: 'IST', name: 'İstanbul', country: 'Türkiyə', flag: '🇹🇷', region: 'europe', rating: 4.8, seed: 'istanbul2024' },
+    { code: 'LHR', name: 'London', country: 'Birləşmiş Krallıq', flag: '🇬🇧', region: 'europe', rating: 4.6, seed: 'london2024' },
+    { code: 'CDG', name: 'Paris', country: 'Fransa', flag: '🇫🇷', region: 'europe', rating: 4.7, seed: 'paris2024' },
+    { code: 'FRA', name: 'Frankfurt', country: 'Almaniya', flag: '🇩🇪', region: 'europe', rating: 4.5, seed: 'frankfurt2024' },
+    { code: 'DXB', name: 'Dubai', country: 'BƏƏ', flag: '🇦🇪', region: 'asia', rating: 4.9, seed: 'dubai2024' },
+    { code: 'NRT', name: 'Tokyo', country: 'Yaponiya', flag: '🇯🇵', region: 'asia', rating: 4.8, seed: 'tokyo2024' },
+    { code: 'JFK', name: 'New York', country: 'ABŞ', flag: '🇺🇸', region: 'america', rating: 4.6, seed: 'newyork2024' },
+    { code: 'LAX', name: 'Los Angeles', country: 'ABŞ', flag: '🇺🇸', region: 'america', rating: 4.5, seed: 'losangeles2024' },
+    { code: 'FCO', name: 'Roma', country: 'İtaliya', flag: '🇮🇹', region: 'europe', rating: 4.7, seed: 'roma2024' },
+    { code: 'BCN', name: 'Barselona', country: 'İspaniya', flag: '🇪🇸', region: 'europe', rating: 4.6, seed: 'barcelona2024' },
+    { code: 'SIN', name: 'Sinqapur', country: 'Sinqapur', flag: '🇸🇬', region: 'asia', rating: 4.9, seed: 'singapore2024' },
+    { code: 'SEO', name: 'Seul', country: 'Cənubi Koreya', flag: '🇰🇷', region: 'asia', rating: 4.7, seed: 'seoul2024' },
+    { code: 'DEL', name: 'Delhi', country: 'Hindistan', flag: '🇮🇳', region: 'asia', rating: 4.3, seed: 'delhi2024' },
+    { code: 'GRU', name: 'Sao Paulo', country: 'Braziliya', flag: '🇧🇷', region: 'america', rating: 4.4, seed: 'saopaulo2024' },
+    { code: 'MEX', name: 'Mexiko', country: 'Meksika', flag: '🇲🇽', region: 'america', rating: 4.3, seed: 'mexico2024' },
+    { code: 'CPT', name: 'Kapştad', country: 'Cənubi Afrika', flag: '🇿🇦', region: 'africa', rating: 4.6, seed: 'capetown2024' },
+    { code: 'CAI', name: 'Qahirə', country: 'Misir', flag: '🇪🇬', region: 'africa', rating: 4.4, seed: 'cairo2024' },
+    { code: 'SYD', name: 'Sidney', country: 'Avstraliya', flag: '🇦🇺', region: 'oceania', rating: 4.7, seed: 'sydney2024' },
+    { code: 'TBS', name: 'Tbilisi', country: 'Gürcüstan', flag: '🇬🇪', region: 'asia', rating: 4.5, seed: 'tbilisi2024' },
+    { code: 'EVN', name: 'İrəvan', country: 'Ermənistan', flag: '🇦🇲', region: 'asia', rating: 4.2, seed: 'yerevan2024' },
+    { code: 'MSQ', name: 'Minsk', country: 'Belarus', flag: '🇧🇾', region: 'europe', rating: 4.1, seed: 'minsk2024' },
+    { code: 'WAW', name: 'Varşava', country: 'Polşa', flag: '🇵🇱', region: 'europe', rating: 4.4, seed: 'warsaw2024' },
+    { code: 'PRG', name: 'Praqa', country: 'Çexiya', flag: '🇨🇿', region: 'europe', rating: 4.6, seed: 'prague2024' },
+    { code: 'VIE', name: 'Vena', country: 'Avstriya', flag: '🇦🇹', region: 'europe', rating: 4.5, seed: 'vienna2024' },
+    { code: 'AMS', name: 'Amsterdam', country: 'Niderland', flag: '🇳🇱', region: 'europe', rating: 4.6, seed: 'amsterdam2024' },
+    { code: 'ZRH', name: 'Sürix', country: 'İsveçrə', flag: '🇨🇭', region: 'europe', rating: 4.7, seed: 'zurich2024' },
+    { code: 'PEK', name: 'Pekin', country: 'Çin', flag: '🇨🇳', region: 'asia', rating: 4.4, seed: 'beijing2024' },
+    { code: 'BKK', name: 'Banqkok', country: 'Tayland', flag: '🇹🇭', region: 'asia', rating: 4.6, seed: 'bangkok2024' },
+    { code: 'KUL', name: 'Kuala Lumpur', country: 'Malayziya', flag: '🇲🇾', region: 'asia', rating: 4.5, seed: 'kualalumpur2024' },
+];
+
+// Aviaşirkətləri - real adlar, kodlar, rənglər
+const airlines = [
+    { code: 'J2', name: 'Azərbaycan Hava Yolları', color: '#e42313' },
+    { code: 'TK', name: 'Turkish Airlines', color: '#c8102e' },
+    { code: 'EK', name: 'Emirates', color: '#d71921' },
+    { code: 'LH', name: 'Lufthansa', color: '#05164d' },
+    { code: 'BA', name: 'British Airways', color: '#075aaa' },
+    { code: 'AF', name: 'Air France', color: '#002157' },
+    { code: 'QR', name: 'Qatar Airways', color: '#5c0632' },
+    { code: 'EY', name: 'Etihad Airways', color: '#b08d57' },
+    { code: 'SU', name: 'Aeroflot', color: '#1a3c6e' },
+    { code: 'FZ', name: 'flydubai', color: '#ff6600' },
+    { code: 'PC', name: 'Pegasus Airlines', color: '#d2001c' },
+    { code: 'W6', name: 'Wizz Air', color: '#c6007b' },
+    { code: 'SQ', name: 'Singapore Airlines', color: '#1f3b5c' },
+    { code: 'NH', name: 'ANA', color: '#13448f' },
+    { code: 'AA', name: 'American Airlines', color: '#0078d2' },
+];
+
+// Qiymət intervalı şəhərə görə (AZN, bir tərəf)
+const priceRanges = {
+    'GYD': { 'IST': [120, 280], 'LHR': [380, 750], 'CDG': [400, 800], 'FRA': [350, 700], 'DXB': [250, 500], 'NRT': [800, 1500], 'JFK': [700, 1300], 'LAX': [850, 1600], 'FCO': [350, 680], 'BCN': [320, 650], 'SIN': [650, 1200], 'SEO': [700, 1300], 'DEL': [400, 800], 'GRU': [1200, 2200], 'MEX': [1100, 2000], 'CPT': [900, 1700], 'CAI': [350, 700], 'SYD': [1100, 2000], 'TBS': [80, 180], 'EVN': [90, 200], 'MSQ': [300, 600], 'WAW': [320, 650], 'PRG': [330, 660], 'VIE': [340, 670], 'AMS': [360, 700], 'ZRH': [370, 720], 'PEK': [750, 1400], 'BKK': [600, 1100], 'KUL': [620, 1150] },
+};
+
+// Uçuş müddəti (saat)
+const durationRanges = {
+    'GYD': { 'IST': [2.5, 3], 'LHR': [6, 7.5], 'CDG': [5.5, 7], 'FRA': [5, 6.5], 'DXB': [3, 4], 'NRT': [11, 13], 'JFK': [14, 16], 'LAX': [16, 19], 'FCO': [5, 6.5], 'BCN': [5, 6.5], 'SIN': [9, 11], 'SEO': [11, 13], 'DEL': [5.5, 7], 'GRU': [18, 22], 'MEX': [17, 20], 'CPT': [12, 15], 'CAI': [4.5, 6], 'SYD': [18, 22], 'TBS': [1, 1.5], 'EVN': [1, 1.5], 'MSQ': [4.5, 6], 'WAW': [5, 6.5], 'PRG': [5, 6.5], 'VIE': [5, 6.5], 'AMS': [5.5, 7], 'ZRH': [5, 6.5], 'PEK': [9, 11], 'BKK': [8, 10], 'KUL': [9, 11] },
+};
+
+// ==================== VƏZİYYƏT ====================
+let passengers = { adult: 1, child: 0, infant: 0 };
+let tripType = 'oneway';
+let myTickets = [];
+let currentSearchResults = [];
+let currentSort = 'price';
+let selectedFlight = null;
+
+// ==================== İNİSİALİZASİYA ====================
+document.addEventListener('DOMContentLoaded', () => {
+    // Bugün tarixi + 7 gün
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    document.getElementById('dateInput').value = d.toISOString().split('T')[0];
+
+    // Ulduzlar yarat
+    createStars();
+
+    // Populyar istiqamətləri yarat
+    renderDestinations();
+
+    // Xüsusi təklifləri yarat
+    renderDeals('all');
+
+    // Scroll animasiya
+    setupScrollReveal();
+
+    // Statistika counter
+    animateCounters();
+
+    // Klikdən kənar dropdown bağla
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('#fromInput') && !e.target.closest('#fromDropdown')) {
+            document.getElementById('fromDropdown').classList.remove('active');
+        }
+        if (!e.target.closest('#toInput') && !e.target.closest('#toDropdown')) {
+            document.getElementById('toDropdown').classList.remove('active');
+        }
+        if (!e.target.closest('#passengerPanel') && !e.target.closest('[onclick="togglePassengerPanel()"]')) {
+            document.getElementById('passengerPanel').style.display = 'none';
+        }
+    });
+});
+
+// ==================== ULDUZLAR ====================
+function createStars() {
+    const container = document.getElementById('starsContainer');
+    for (let i = 0; i < 80; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = (Math.random() * 3) + 's';
+        star.style.animationDuration = (2 + Math.random() * 3) + 's';
+        container.appendChild(star);
+    }
+}
+
+// ==================== POPULYAR İSTİQAMƏTLƏR ====================
+function renderDestinations() {
+    const grid = document.getElementById('destGrid');
+    // Bakıdan ən populyar 8 istiqamət
+    const popular = ['IST', 'DXB', 'LHR', 'CDG', 'NRT', 'JFK', 'BCN', 'SIN'];
+    grid.innerHTML = popular.map(code => {
+        const city = cities.find(c => c.code === code);
+        const prices = priceRanges['GYD']?.[code] || [200, 500];
+        const price = Math.round(prices[0] + Math.random() * (prices[1] - prices[0]));
+        return `
+            <div class="dest-card" style="background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden;" onclick="quickSearch('${code}')">
+                <div style="height: 180px; overflow: hidden; position: relative;">
+                    <img class="card-img" src="https://picsum.photos/seed/${city.seed}/400/300.jpg" alt="${city.name}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div style="position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border-radius: 8px; padding: 4px 10px; display: flex; align-items: center; gap: 6px;">
+                        <span class="flag">${city.flag}</span>
+                        <span style="font-size: 0.8rem; font-weight: 600;">${city.code}</span>
+                    </div>
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(transparent, rgba(0,0,0,0.7));"></div>
+                    <div style="position: absolute; bottom: 12px; left: 14px;">
+                        <div style="font-weight: 700; font-size: 1.1rem; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">${city.name}</div>
+                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.7);">${city.country}</div>
+                    </div>
+                </div>
+                <div style="padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--muted);">GYD → ${city.code}</div>
+                        <div class="stars" style="font-size: 0.75rem;">
+                            ${'<i class="fas fa-star"></i>'.repeat(Math.floor(city.rating))}${city.rating % 1 >= 0.5 ? '<i class="fas fa-star-half-alt"></i>' : ''}
+                            <span style="color: var(--muted); margin-left: 4px;">${city.rating}</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.75rem; color: var(--muted);">başlanğıc</div>
+                        <div style="font-weight: 900; font-size: 1.2rem; color: var(--accent);">${price} <span style="font-size: 0.7rem; font-weight: 500;">AZN</span></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ==================== XÜSUSİ TƏKLİFLƏR ====================
+function renderDeals(filter) {
+    const grid = document.getElementById('dealsGrid');
+    let deals = [
+        { from: 'GYD', to: 'IST', discount: 25, badge: 'Ən populyar', badgeColor: 'var(--teal)' },
+        { from: 'GYD', to: 'DXB', discount: 20, badge: 'Hot', badgeColor: 'var(--red)' },
+        { from: 'GYD', to: 'LHR', discount: 30, badge: 'Xüsusi', badgeColor: 'var(--accent)' },
+        { from: 'GYD', to: 'NRT', discount: 15, badge: 'Yeni', badgeColor: 'var(--green)' },
+        { from: 'GYD', to: 'CDG', discount: 22, badge: 'Limitsiz', badgeColor: '#8b5cf6' },
+        { from: 'GYD', to: 'JFK', discount: 18, badge: 'Satışda', badgeColor: 'var(--teal)' },
+    ];
+
+    if (filter !== 'all') {
+        deals = deals.filter(d => {
+            const city = cities.find(c => c.code === d.to);
+            return city && city.region === filter;
+        });
+        if (deals.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--muted);">Bu regionda hazirki deqiqe yoxdur</div>';
+            return;
+        }
+    }
+
+    grid.innerHTML = deals.map(deal => {
+        const fromCity = cities.find(c => c.code === deal.from);
+        const toCity = cities.find(c => c.code === deal.to);
+        const prices = priceRanges[deal.from]?.[deal.to] || [200, 500];
+        const origPrice = Math.round(prices[1]);
+        const discPrice = Math.round(origPrice * (1 - deal.discount / 100));
+        const durations = durationRanges[deal.from]?.[deal.to] || [3, 5];
+        const dur = (durations[0] + Math.random() * (durations[1] - durations[0])).toFixed(1);
+
+        return `
+            <div class="dest-card" style="background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;" onclick="quickSearch('${deal.to}')">
+                <div style="position: relative; height: 160px; overflow: hidden;">
+                    <img class="card-img" src="https://picsum.photos/seed/${toCity.seed}deal/500/300.jpg" alt="${toCity.name}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div style="position: absolute; top: 12px; right: 12px; background: ${deal.badgeColor}; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">${deal.badge}</div>
+                    <div style="position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border-radius: 8px; padding: 4px 10px; display: flex; align-items: center; gap: 6px;">
+                        <span class="flag">${toCity.flag}</span>
+                    </div>
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(transparent, rgba(0,0,0,0.7));"></div>
+                    <div style="position: absolute; bottom: 10px; left: 14px; font-weight: 700;">${toCity.name}, ${toCity.country}</div>
+                </div>
+                <div style="padding: 16px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 0.85rem; font-weight: 600;">${fromCity.flag} GYD</span>
+                        <div style="flex: 1; height: 1px; background: var(--border); position: relative;">
+                            <i class="fas fa-plane" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.6rem; color: var(--muted); background: var(--card); padding: 0 4px;"></i>
+                        </div>
+                        <span style="font-size: 0.85rem; font-weight: 600;">${toCity.flag} ${toCity.code}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: var(--muted); margin-bottom: 12px;">
+                        <span><i class="fas fa-clock" style="margin-right: 4px;"></i>${dur} saat</span>
+                        <span><i class="fas fa-exchange-alt" style="margin-right: 4px;"></i>Direct</span>
+                    </div>
+                    <div style="display: flex; align-items: end; justify-content: space-between;">
+                        <div>
+                            <span style="text-decoration: line-through; color: var(--muted); font-size: 0.85rem;">${origPrice} AZN</span>
+                            <span style="background: var(--red); color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; margin-left: 6px;">-${deal.discount}%</span>
+                        </div>
+                        <div style="font-weight: 900; font-size: 1.4rem; color: var(--accent);">${discPrice} <span style="font-size: 0.75rem; font-weight: 500;">AZN</span></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function filterDeals(filter, btn) {
+    document.querySelectorAll('#dealFilters .tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderDeals(filter);
+}
+
+// ==================== DROPDOWN ŞƏHƏR AXTARIŞI ====================
+function showDropdown(type) {
+    const dropdown = document.getElementById(type + 'Dropdown');
+    filterCities(type);
+    dropdown.classList.add('active');
+}
+
+function filterCities(type) {
+    const input = document.getElementById(type + 'Input');
+    const dropdown = document.getElementById(type + 'Dropdown');
+    const query = input.value.toLowerCase().trim();
+
+    const filtered = cities.filter(c =>
+        c.name.toLowerCase().includes(query) ||
+        c.code.toLowerCase().includes(query) ||
+        c.country.toLowerCase().includes(query)
+    );
+
+    // Haradan dropdownunda Bakını gizlət
+    const display = type === 'from' ? filtered : filtered.filter(c => c.code !== 'GYD');
+
+    dropdown.innerHTML = display.slice(0, 10).map(c => `
+        <div class="dropdown-item" onclick="selectCity('${type}', '${c.code}')">
+            <span class="flag">${c.flag}</span>
+            <div style="flex: 1;">
+                <div style="font-weight: 600;">${c.name} <span style="color: var(--teal); font-size: 0.8rem;">${c.code}</span></div>
+                <div style="font-size: 0.75rem; color: var(--muted);">${c.country}</div>
+            </div>
+        </div>
+    `).join('');
+
+    dropdown.classList.add('active');
+}
+
+function selectCity(type, code) {
+    const city = cities.find(c => c.code === code);
+    const input = document.getElementById(type + 'Input');
+    const label = document.getElementById(type + 'Label');
+    const codeInput = document.getElementById(type + 'Code');
+
+    input.value = city.name;
+    codeInput.value = code;
+    label.innerHTML = `${city.flag} ${city.name}, ${city.code}`;
+    label.style.color = type === 'from' ? 'var(--teal)' : 'var(--accent)';
+
+    document.getElementById(type + 'Dropdown').classList.remove('active');
+}
+
+// ==================== SƏRNİŞİN PANELİ ====================
+function togglePassengerPanel() {
+    const panel = document.getElementById('passengerPanel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function changePassenger(type, delta) {
+    passengers[type] = Math.max(type === 'adult' ? 1 : 0, Math.min(9, passengers[type] + delta));
+    document.getElementById(type + 'Count').textContent = passengers[type];
+
+    // Minus düyməsinin disabled vəziyyəti
+    const minBtn = document.getElementById(type + 'Minus');
+    minBtn.disabled = passengers[type] <= (type === 'adult' ? 1 : 0);
+
+    // Ümumi sayı yenilə
+    const total = passengers.adult + passengers.child + passengers.infant;
+    document.getElementById('passengerLabel').textContent = total === 1 ? '1 sərnişin' : total + ' sərnişin';
+}
+
+// ==================== SİFARİŞ TİPİ ====================
+function setTripType(btn) {
+    document.querySelectorAll('[data-trip]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    tripType = btn.dataset.trip;
+}
+
+// ==================== UÇUŞ AXTARIŞI ====================
+function quickSearch(toCode) {
+    selectCity('to', toCode);
+    document.getElementById('destinations').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => searchFlights(), 400);
+}
+
+function searchFlights() {
+    const fromCode = document.getElementById('fromCode').value;
+    const toCode = document.getElementById('toCode').value;
+    const date = document.getElementById('dateInput').value;
+
+    if (!toCode) {
+        showToast('Zəhmət olmasa istiqamət seçin', 'error');
+        return;
+    }
+    if (!date) {
+        showToast('Zəhmət olmasa tarix seçin', 'error');
+        return;
+    }
+
+    const fromCity = cities.find(c => c.code === fromCode);
+    const toCity = cities.find(c => c.code === toCode);
+
+    // Uçuş nəticələrini yarat
+    currentSearchResults = generateFlights(fromCode, toCode, date);
+    currentSort = 'price';
+    currentSearchResults.sort((a, b) => a.price - b.price);
+
+    // Nəticələri göstər
+    document.getElementById('resultsSection').style.display = 'block';
+    document.getElementById('resultsTitle').textContent = `${fromCity.name} → ${toCity.name}`;
+    document.getElementById('resultsSubtitle').textContent = `${formatDate(date)} · ${passengers.adult + passengers.child + passengers.infant} sərnişin · ${currentSearchResults.length} nəticə`;
+
+    renderResults();
+
+    // Sort düymələrini yenilə
+    document.querySelectorAll('#sortPrice, #sortDuration, #sortDeparture').forEach(b => b.classList.remove('active'));
+    document.getElementById('sortPrice').classList.add('active');
+
+    setTimeout(() => {
+        document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+}
+
+function generateFlights(fromCode, toCode, date) {
+    const results = [];
+    const prices = priceRanges[fromCode]?.[toCode] || [200, 800];
+    const durations = durationRanges[fromCode]?.[toCode] || [2, 8];
+    const baseHours = [6, 8, 10, 12, 14, 16, 18, 20, 22];
+
+    // 5-8 uçuş yarat
+    const count = 5 + Math.floor(Math.random() * 4);
+    const usedAirlines = new Set();
+
+    for (let i = 0; i < count; i++) {
+        let airline;
+        do {
+            airline = airlines[Math.floor(Math.random() * airlines.length)];
+        } while (usedAirlines.has(airline.code) && usedAirlines.size < airlines.length);
+        usedAirlines.add(airline.code);
+
+        const price = Math.round(prices[0] + Math.random() * (prices[1] - prices[0]));
+        const dur = durations[0] + Math.random() * (durations[1] - durations[0]);
+        const durHours = Math.floor(dur);
+        const durMins = Math.round((dur - durHours) * 60);
+        const depHour = baseHours[i % baseHours.length];
+        const depMin = Math.floor(Math.random() * 60);
+        const arrHour = (depHour + durHours + Math.floor((depMin + durMins) / 60)) % 24;
+        const arrMin = (depMin + durMins) % 60;
+        const stops = Math.random() > 0.6 ? (Math.random() > 0.7 ? 2 : 1) : 0;
+
+        // Uçuş sinfi
+        const classes = ['Economy', 'Business', 'Premium Economy'];
+        const flightClass = i === 0 ? 'Business' : (i === 1 ? 'Premium Economy' : 'Economy');
+        const classMultiplier = flightClass === 'Business' ? 2.8 : (flightClass === 'Premium Economy' ? 1.5 : 1);
+        const finalPrice = Math.round(price * classMultiplier);
+
+        results.push({
+            id: 'SV-' + Math.random().toString(36).substr(2, 8).toUpperCase(),
+            airline: airline,
+            from: fromCode,
+            to: toCode,
+            date: date,
+            depTime: `${String(depHour).padStart(2, '0')}:${String(depMin).padStart(2, '0')}`,
+            arrTime: `${String(arrHour).padStart(2, '0')}:${String(arrMin).padStart(2, '0')}`,
+            duration: `${durHours}s ${durMins}d`,
+            durationMin: Math.round(dur * 60),
+            stops: stops,
+            stopCities: stops > 0 ? [cities[Math.floor(Math.random() * cities.length)].code] : [],
+            price: finalPrice,
+            flightClass: flightClass,
+            seats: 3 + Math.floor(Math.random() * 15),
+            baggage: flightClass === 'Business' ? '2x23kg' : (flightClass === 'Premium Economy' ? '1x23kg + 1x12kg' : '1x23kg'),
+            meal: flightClass === 'Economy' ? (Math.random() > 0.4 ? 'Bəli' : 'Əlavə ödənişli') : 'Bəli',
+            wifi: Math.random() > 0.5,
+            usb: Math.random() > 0.3,
+            entertainment: flightClass !== 'Economy' || Math.random() > 0.5,
+        });
+    }
+    return results;
+}
+
+function renderResults() {
+    const container = document.getElementById('resultsContainer');
+    const fromCity = cities.find(c => c.code === currentSearchResults[0]?.from);
+    const toCity = cities.find(c => c.code === currentSearchResults[0]?.to);
+
+    container.innerHTML = currentSearchResults.map(f => {
+        const stopText = f.stops === 0 ? 'Direct' : `${f.stops} stop${f.stops > 1 ? 's' : ''}`;
+        const stopColor = f.stops === 0 ? 'var(--green)' : (f.stops === 1 ? 'var(--accent)' : 'var(--red)');
+
+        return `
+            <div class="flight-card" onclick='selectFlight(${JSON.stringify(f).replace(/'/g, "&#39;")})'>
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+                    <!-- Aviaşirkət -->
+                    <div style="display: flex; align-items: center; gap: 12px; min-width: 160px;">
+                        <div class="airline-logo" style="background: ${f.airline.color};">${f.airline.code}</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 0.9rem;">${f.airline.name}</div>
+                            <div style="font-size: 0.75rem; color: var(--muted);">${f.id}</div>
+                        </div>
+                    </div>
+
+                    <!-- Marşrut -->
+                    <div style="display: flex; align-items: center; flex: 1; min-width: 280px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.4rem; font-weight: 900;">${f.depTime}</div>
+                            <div style="font-size: 0.75rem; color: var(--muted);">${f.from}</div>
+                        </div>
+                        <div class="route-line"></div>
+                        <div style="text-align: center; flex-shrink: 0;">
+                            <div style="font-size: 0.75rem; color: ${stopColor}; font-weight: 600;">${stopText}</div>
+                            <div style="font-size: 0.7rem; color: var(--muted);">${f.duration}</div>
+                        </div>
+                        <div class="route-line"></div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.4rem; font-weight: 900;">${f.arrTime}</div>
+                            <div style="font-size: 0.75rem; color: var(--muted);">${f.to}</div>
+                        </div>
+                    </div>
+
+                    <!-- Qiymət -->
+                    <div style="text-align: right; min-width: 140px;">
+                        <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 2px;">${f.flightClass}</div>
+                        <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent);">${f.price * (passengers.adult + passengers.child)} <span style="font-size: 0.75rem; font-weight: 500;">AZN</span></div>
+                        <div style="font-size: 0.7rem; color: var(--muted);">${f.seats} yer qaldı</div>
+                    </div>
+                </div>
+
+                <!-- Əlavə məlumat -->
+                <div style="display: flex; gap: 16px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); flex-wrap: wrap;">
+                    <span style="font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 4px;">
+                        <i class="fas fa-suitcase" style="color: var(--teal);"></i> ${f.baggage}
+                    </span>
+                    <span style="font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 4px;">
+                        <i class="fas fa-utensils" style="color: var(--teal);"></i> Yemək: ${f.meal}
+                    </span>
+                    ${f.wifi ? '<span style="font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 4px;"><i class="fas fa-wifi" style="color: var(--green);"></i> Wi-Fi</span>' : ''}
+                    ${f.usb ? '<span style="font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 4px;"><i class="fas fa-plug" style="color: var(--green);"></i> USB</span>' : ''}
+                    ${f.entertainment ? '<span style="font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 4px;"><i class="fas fa-tv" style="color: var(--green);"></i> Əyləncə</span>' : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function sortFlights(type) {
+    currentSort = type;
+    document.querySelectorAll('#sortPrice, #sortDuration, #sortDeparture').forEach(b => b.classList.remove('active'));
+    document.getElementById('sort' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('active');
+
+    if (type === 'price') currentSearchResults.sort((a, b) => a.price - b.price);
+    else if (type === 'duration') currentSearchResults.sort((a, b) => a.durationMin - b.durationMin);
+    else if (type === 'departure') currentSearchResults.sort((a, b) => a.depTime.localeCompare(b.depTime));
+
+    renderResults();
+}
+
+// ==================== BİLƏT SEÇİMİ VƏ SİFARİŞ ====================
+function selectFlight(flight) {
+    selectedFlight = flight;
+    const fromCity = cities.find(c => c.code === flight.from);
+    const toCity = cities.find(c => c.code === flight.to);
+
+    // Uçuş məlumatını göstər
+    document.getElementById('bookingFlightInfo').innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="airline-logo" style="background: ${flight.airline.color};">${flight.airline.code}</div>
+                <div>
+                    <div style="font-weight: 600;">${flight.airline.name}</div>
+                    <div style="font-size: 0.8rem; color: var(--muted);">${flight.id} · ${flight.flightClass}</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 1.3rem; font-weight: 900;">${flight.depTime}</div>
+                    <div style="font-size: 0.75rem; color: var(--muted);">${fromCity.flag} ${flight.from}</div>
+                </div>
+                <div style="color: var(--muted);"><i class="fas fa-arrow-right"></i></div>
+                <div style="text-align: center;">
+                    <div style="font-size: 1.3rem; font-weight: 900;">${flight.arrTime}</div>
+                    <div style="font-size: 0.75rem; color: var(--muted);">${toCity.flag} ${flight.to}</div>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 0.8rem; color: var(--muted);">${formatDate(flight.date)}</div>
+                <div style="font-size: 0.8rem; color: var(--muted);">${flight.duration} · ${flight.stops === 0 ? 'Direct' : flight.stops + ' stop'}</div>
+            </div>
+        </div>
+    `;
+
+    // Sərnişin formu yarat
+    const formContainer = document.getElementById('passengerFormContainer');
+    let formHTML = '';
+    const totalPassengers = passengers.adult + passengers.child + passengers.infant;
+
+    for (let i = 0; i < passengers.adult; i++) {
+        formHTML += generatePassengerField(i + 1, 'Yetkin', i === 0);
+    }
+    for (let i = 0; i < passengers.child; i++) {
+        formHTML += generatePassengerField(passengers.adult + i + 1, 'Uşaq', false);
+    }
+    for (let i = 0; i < passengers.infant; i++) {
+        formHTML += generatePassengerField(passengers.adult + passengers.child + i + 1, 'Sagird', false);
+    }
+
+    formContainer.innerHTML = formHTML;
+
+    // Cəmi qiyməti hesabla
+    const totalPrice = flight.price * passengers.adult + Math.round(flight.price * 0.7) * passengers.child + Math.round(flight.price * 0.1) * passengers.infant;
+    document.getElementById('bookingTotal').textContent = totalPrice + ' AZN';
+
+    // Modalı aç
+    document.getElementById('bookingModal').classList.add('active');
+}
+
+function generatePassengerField(num, type, isFirst) {
+    return `
+        <div style="margin-bottom: 20px; padding: 16px; background: var(--bg); border-radius: 12px; border: 1px solid var(--border);">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+                <i class="fas fa-user" style="color: var(--teal); font-size: 0.85rem;"></i>
+                <span style="font-weight: 700; font-size: 0.9rem;">${num}. Sərnişin</span>
+                <span style="background: rgba(13,148,136,0.15); color: var(--teal); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem;">${type}</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                    <label style="font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; display: block;">Ad</label>
+                    <input type="text" class="pax-name" placeholder="${isFirst ? 'Orxan' : ''}" value="${isFirst ? 'Orxan' : ''}">
+                </div>
+                <div>
+                    <label style="font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; display: block;">Soyad</label>
+                    <input type="text" class="pax-surname" placeholder="${isFirst ? 'Hüseynov' : ''}" value="${isFirst ? 'Hüseynov' : ''}">
+                </div>
+                <div>
+                    <label style="font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; display: block;">Pasport nömrəsi</label>
+                    <input type="text" class="pax-passport" placeholder="A1234567" maxlength="9">
+                </div>
+                <div>
+                    <label style="font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; display: block;">Doğum tarixi</label>
+                    <input type="date" class="pax-birth" style="background: var(--bg); border: 1px solid var(--border); color: var(--fg); border-radius: 8px; padding: 10px 14px; width: 100%; font-family: 'Outfit'; color-scheme: dark;">
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function confirmBooking() {
+    // Sadə validation
+    const names = document.querySelectorAll('.pax-name');
+    const surnames = document.querySelectorAll('.pax-surname');
+    const passports = document.querySelectorAll('.pax-passport');
+
+    for (let i = 0; i < names.length; i++) {
+        if (!names[i].value.trim() || !surnames[i].value.trim()) {
+            showToast(`${i + 1}. sərnişinin ad və soyadı mütləqdir`, 'error');
+            names[i].focus();
+            return;
+        }
+        if (!passports[i].value.trim()) {
+            showToast(`${i + 1}. sərnişinin pasport nömrəsi mütləqdir`, 'error');
+            passports[i].focus();
+            return;
+        }
+    }
+
+    // Bileti yarat
+    const ticket = {
+        ...selectedFlight,
+        passengers: [],
+        bookedAt: new Date().toLocaleString('az-AZ'),
+        status: 'Təsdiqləndi',
+        pnr: 'PNR-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+    };
+
+    for (let i = 0; i < names.length; i++) {
+        ticket.passengers.push({
+            name: names[i].value,
+            surname: surnames[i].value,
+            passport: passports[i].value,
+            birth: document.querySelectorAll('.pax-birth')[i]?.value || '',
+        });
+    }
+
+    // Qiyməti hesabla
+    ticket.totalPrice = selectedFlight.price * passengers.adult + Math.round(selectedFlight.price * 0.7) * passengers.child + Math.round(selectedFlight.price * 0.1) * passengers.infant;
+
+    myTickets.push(ticket);
+    document.getElementById('ticketCount').textContent = myTickets.length;
+
+    closeModal('bookingModal');
+    showToast(`Bilet uğurla sifariş edildi! PNR: ${ticket.pnr}`, 'success');
+}
+
+// ==================== BİLETLƏRİM ====================
+function openMyTickets() {
+    const list = document.getElementById('ticketsList');
+
+    if (myTickets.length === 0) {
+        list.innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <i class="fas fa-ticket" style="font-size: 3rem; color: var(--border); margin-bottom: 16px;"></i>
+                <div style="color: var(--muted); font-size: 1rem;">Hələ bilet yoxdur</div>
+                <div style="color: var(--muted); font-size: 0.85rem; margin-top: 4px;">Uçuş axtarın və bilet sifariş edin</div>
+            </div>
+        `;
+    } else {
+        list.innerHTML = myTickets.map((t, idx) => {
+            const fromCity = cities.find(c => c.code === t.from);
+            const toCity = cities.find(c => c.code === t.to);
+            return `
+                <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 14px; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; right: 0; width: 60px; height: 60px; background: linear-gradient(135deg, transparent 50%, rgba(13,148,136,0.1) 50%);"></div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="airline-logo" style="background: ${t.airline.color}; width: 32px; height: 32px; font-size: 0.6rem;">${t.airline.code}</div>
+                            <span style="font-weight: 700; font-size: 0.9rem;">${t.airline.name}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="background: rgba(34,197,94,0.15); color: var(--green); padding: 3px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">${t.status}</span>
+                            <span style="color: var(--muted); font-size: 0.8rem;">PNR: ${t.pnr}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
+                        <div>
+                            <div style="font-size: 1.2rem; font-weight: 900;">${t.depTime}</div>
+                            <div style="font-size: 0.8rem; color: var(--muted);">${fromCity?.flag || ''} ${t.from}</div>
+                        </div>
+                        <div style="flex: 1; text-align: center; font-size: 0.8rem; color: var(--muted);">
+                            <i class="fas fa-arrow-right"></i> ${t.duration}
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 1.2rem; font-weight: 900;">${t.arrTime}</div>
+                            <div style="font-size: 0.8rem; color: var(--muted);">${toCity?.flag || ''} ${t.to}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 8px;">
+                        <div style="font-size: 0.8rem; color: var(--muted);">
+                            ${formatDate(t.date)} · ${t.flightClass} · ${t.passengers.length} sərnişin
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-weight: 900; color: var(--accent);">${t.totalPrice} AZN</span>
+                            <button onclick="cancelTicket(${idx})" style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--red); padding: 4px 12px; border-radius: 6px; cursor: pointer; font-family: 'Outfit'; font-size: 0.75rem; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.background='rgba(239,68,68,0.2)'" onmouseout="this.style.background='rgba(239,68,68,0.1)'">Ləğv et</button>
+                        </div>
+                    </div>
+                    ${t.passengers.length > 0 ? `
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 0.8rem; color: var(--muted);">
+                        ${t.passengers.map(p => `<span style="display: inline-block; margin-right: 12px; margin-bottom: 4px;">${p.name} ${p.surname}</span>`).join('')}
+                    </div>` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    document.getElementById('ticketsModal').classList.add('active');
+}
+
+function cancelTicket(idx) {
+    const ticket = myTickets[idx];
+    myTickets.splice(idx, 1);
+    document.getElementById('ticketCount').textContent = myTickets.length;
+    openMyTickets(); // Yenilə
+    showToast(`${ticket.pnr} nomreli bilet legv edildi`, 'info');
+}
+
+// ==================== MODAL ====================
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+// Modal overlay-ə kliklə bağla
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.classList.remove('active');
+    });
+});
+
+// ==================== TOAST ====================
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
+    toast.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
+}
+
+// ==================== KÖMƏKÇİ FUNKSİYALAR ====================
+function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    const months = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek'];
+    const days = ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə'];
+    return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ==================== SCROLL REVEAL ====================
+function setupScrollReveal() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.section-reveal').forEach(el => observer.observe(el));
+}
+
+// ==================== STATİSTİKA COUNTER ====================
+function animateCounters() {
+    const targets = { statFlights: 1247, statDest: 538, statAirlines: 156, statHappy: 89420 };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                const target = targets[el.id];
+                let current = 0;
+                const step = Math.ceil(target / 60);
+                const interval = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(interval);
+                    }
+                    el.textContent = current >= 1000 ? (current / 1000).toFixed(1).replace('.0', '') + 'K+' : current + '+';
+                }, 25);
+                observer.unobserve(el);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    Object.keys(targets).forEach(id => observer.observe(document.getElementById(id)));
+}
+
+// ==================== KLAVİATURA DƏSTƏYİ ====================
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+    }
+    if (e.key === 'Enter' && document.activeElement.id === 'toInput') {
+        searchFlights();
+    }
+});
+</script>
+
+</body>
+</html>
